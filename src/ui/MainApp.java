@@ -59,7 +59,7 @@ public class MainApp {
 	private void initialize() {
 		sheetPanels = new ArrayList<SheetPanel>();
 		frmVehicleSpreadsheetCreator = new JFrame();
-		frmVehicleSpreadsheetCreator.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\lewis.gordon\\workspace\\VehicleSpreadsheetCreator\\res\\images\\manheim.gif"));
+		frmVehicleSpreadsheetCreator.setIconImage(Toolkit.getDefaultToolkit().getImage(MainApp.class.getResource("/images/manheim.gif")));
 		frmVehicleSpreadsheetCreator.setTitle("Vehicle Spreadsheet Creator");
 		frmVehicleSpreadsheetCreator.setBounds(100, 100, 450, 300);
 		frmVehicleSpreadsheetCreator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

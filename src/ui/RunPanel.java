@@ -110,41 +110,88 @@ public class RunPanel extends SheetPanel{
 		add(panel, gbc_panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0};
+		gbl_panel.rowHeights = new int[]{0, 0, 0};
 		gbl_panel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		JCheckBox chckbxRegister = new JCheckBox("Register");
 		GridBagConstraints gbc_chckbxRegister = new GridBagConstraints();
-		gbc_chckbxRegister.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxRegister.anchor = GridBagConstraints.WEST;
+		gbc_chckbxRegister.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxRegister.gridx = 0;
 		gbc_chckbxRegister.gridy = 0;
 		panel.add(chckbxRegister, gbc_chckbxRegister);
 		checkBoxes.add(chckbxRegister);
 		
 		JCheckBox chckbxSell = new JCheckBox("Sell");
+		chckbxSell.setEnabled(false);
 		GridBagConstraints gbc_chckbxSell = new GridBagConstraints();
-		gbc_chckbxSell.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxSell.anchor = GridBagConstraints.WEST;
+		gbc_chckbxSell.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxSell.gridx = 1;
 		gbc_chckbxSell.gridy = 0;
 		panel.add(chckbxSell, gbc_chckbxSell);
 		checkBoxes.add(chckbxSell);
 		
 		JCheckBox chckbxPsi = new JCheckBox("PSI");
+		chckbxPsi.setEnabled(false);
 		GridBagConstraints gbc_chckbxPsi = new GridBagConstraints();
-		gbc_chckbxPsi.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxPsi.anchor = GridBagConstraints.WEST;
+		gbc_chckbxPsi.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxPsi.gridx = 2;
 		gbc_chckbxPsi.gridy = 0;
 		panel.add(chckbxPsi, gbc_chckbxPsi);
 		checkBoxes.add(chckbxPsi);
 		
 		JCheckBox chckbxArbitration = new JCheckBox("Arbitration");
+		chckbxArbitration.setEnabled(false);
 		GridBagConstraints gbc_chckbxArbitration = new GridBagConstraints();
+		gbc_chckbxArbitration.anchor = GridBagConstraints.WEST;
+		gbc_chckbxArbitration.insets = new Insets(0, 0, 5, 0);
 		gbc_chckbxArbitration.gridx = 3;
 		gbc_chckbxArbitration.gridy = 0;
 		panel.add(chckbxArbitration, gbc_chckbxArbitration);
 		checkBoxes.add(chckbxArbitration);
+		
+		JCheckBox chckbxTitle = new JCheckBox("Title");
+		chckbxTitle.setEnabled(false);
+		GridBagConstraints gbc_chckbxTitle = new GridBagConstraints();
+		gbc_chckbxTitle.anchor = GridBagConstraints.WEST;
+		gbc_chckbxTitle.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxTitle.gridx = 0;
+		gbc_chckbxTitle.gridy = 1;
+		panel.add(chckbxTitle, gbc_chckbxTitle);
+		checkBoxes.add(chckbxTitle);
+		
+		JCheckBox chckbxPayment = new JCheckBox("Payment");
+		chckbxPayment.setEnabled(false);
+		GridBagConstraints gbc_chckbxPayment = new GridBagConstraints();
+		gbc_chckbxPayment.anchor = GridBagConstraints.WEST;
+		gbc_chckbxPayment.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxPayment.gridx = 1;
+		gbc_chckbxPayment.gridy = 1;
+		panel.add(chckbxPayment, gbc_chckbxPayment);
+		checkBoxes.add(chckbxPayment);
+		
+		JCheckBox chckbxGI4142 = new JCheckBox("GI4142");
+		chckbxGI4142.setEnabled(false);
+		GridBagConstraints gbc_chckbxGI4142 = new GridBagConstraints();
+		gbc_chckbxGI4142.anchor = GridBagConstraints.WEST;
+		gbc_chckbxGI4142.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxGI4142.gridx = 2;
+		gbc_chckbxGI4142.gridy = 1;
+		panel.add(chckbxGI4142, gbc_chckbxGI4142);
+		checkBoxes.add(chckbxGI4142);
+		
+		JCheckBox chckbxMyPurchases = new JCheckBox("MyPurchases");
+		chckbxMyPurchases.setEnabled(false);
+		GridBagConstraints gbc_chckbxMyPurchases = new GridBagConstraints();
+		gbc_chckbxMyPurchases.anchor = GridBagConstraints.WEST;
+		gbc_chckbxMyPurchases.gridx = 3;
+		gbc_chckbxMyPurchases.gridy = 1;
+		panel.add(chckbxMyPurchases, gbc_chckbxMyPurchases);
+		checkBoxes.add(chckbxMyPurchases);
 		
 		JLabel lblNewLabel = new JLabel("Silo");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
