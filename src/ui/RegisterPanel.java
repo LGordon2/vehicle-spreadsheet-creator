@@ -19,7 +19,7 @@ public class RegisterPanel extends SheetPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField saleNumber;
-	private NumberTextField dealerNumber;
+	private NumberTextField sellerNumber;
 	private NumberTextField milesRangeLow;
 	private NumberTextField milesRangeHigh;
 	private JTextField vehicleCount;
@@ -112,22 +112,22 @@ public class RegisterPanel extends SheetPanel {
 		add(saleYear, gbc_saleYear);
 		saleYear.setColumns(10);
 
-		JLabel lblDealerNumber = new JLabel("Dealer Number");
-		GridBagConstraints gbc_lblDealerNumber = new GridBagConstraints();
-		gbc_lblDealerNumber.anchor = GridBagConstraints.EAST;
-		gbc_lblDealerNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_lblDealerNumber.gridx = 0;
-		gbc_lblDealerNumber.gridy = 4;
-		add(lblDealerNumber, gbc_lblDealerNumber);
+		JLabel lblSellerNumber = new JLabel("Seller Number");
+		GridBagConstraints gbc_lblSellerNumber = new GridBagConstraints();
+		gbc_lblSellerNumber.anchor = GridBagConstraints.EAST;
+		gbc_lblSellerNumber.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSellerNumber.gridx = 0;
+		gbc_lblSellerNumber.gridy = 4;
+		add(lblSellerNumber, gbc_lblSellerNumber);
 
-		dealerNumber = new NumberTextField();
+		sellerNumber = new NumberTextField();
 		GridBagConstraints gbc_dealerNumber = new GridBagConstraints();
 		gbc_dealerNumber.anchor = GridBagConstraints.WEST;
 		gbc_dealerNumber.insets = new Insets(0, 0, 5, 5);
 		gbc_dealerNumber.gridx = 1;
 		gbc_dealerNumber.gridy = 4;
-		add(dealerNumber, gbc_dealerNumber);
-		dealerNumber.setColumns(10);
+		add(sellerNumber, gbc_dealerNumber);
+		sellerNumber.setColumns(10);
 
 		JLabel lblMiles = new JLabel("Miles Range");
 		GridBagConstraints gbc_lblMiles = new GridBagConstraints();
@@ -185,7 +185,7 @@ public class RegisterPanel extends SheetPanel {
 			sheetRow.setData("WorkOrderNumber", "");
 			sheetRow.setData("VIN", "");
 			sheetRow.setData("SaleNumber", saleNumber.getText());
-			sheetRow.setData("DealerNumber", dealerNumber.getText());
+			sheetRow.setData("SellerNumber", sellerNumber.getText());
 			sheetRow.setData("Miles", getRandomMileage());
 			sheetRow.setData("BU", "I");
 			sheetRow.setData("Transmission", "A");
