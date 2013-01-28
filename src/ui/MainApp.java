@@ -22,6 +22,8 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import javax.swing.JCheckBox;
+import java.awt.Insets;
 
 
 public class MainApp {
