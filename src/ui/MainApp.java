@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,15 +24,14 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import javax.swing.JCheckBox;
-import java.awt.Insets;
 
 
-public class MainApp {
+public class MainApp{
 
 	private JFrame frmVehicleSpreadsheetCreator;
 	private ArrayList<SheetPanel> sheetPanels;
 	private JTabbedPane tabbedPane;
+	private RunPanel runPanel;
 
 	/**
 	 * Launch the application.
@@ -108,7 +109,7 @@ public class MainApp {
 		gbc_tabbedPane.gridy = 0;
 		frmVehicleSpreadsheetCreator.getContentPane().add(tabbedPane, gbc_tabbedPane);
 
-		JPanel runPanel = new RunPanel();
+		runPanel = new RunPanel();
 		sheetPanels.add((SheetPanel) runPanel);
 		GridBagLayout gridBagLayout_1 = (GridBagLayout) runPanel.getLayout();
 		gridBagLayout_1.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0};
@@ -118,6 +119,10 @@ public class MainApp {
 		JPanel registerPanel = new RegisterPanel();
 		sheetPanels.add((SheetPanel) registerPanel);
 		tabbedPane.addTab("Register", null, registerPanel, null);
+		
+		JPanel sellPanel = new SellPanel();
+		sheetPanels.add((SheetPanel) sellPanel);
+		tabbedPane.addTab("Sell", null, sellPanel, null);
 
 	}
 
@@ -129,12 +134,14 @@ public class MainApp {
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation"+File.separator+"MasterDriver.xls"));
 
 		for(int i=0;i<sheetPanels.size();i++){
-			sheetPanels.get(i).createSheet(workbook, i);
-			sheetPanels.get(i).writeSheet();
+			if(runPanel.isEnabledSheetPanel(sheetPanels.get(i).getDescription()) || 
+					sheetPanels.get(i).getDescription().equals(runPanel.getDescription())){
+				sheetPanels.get(i).createSheet(workbook, i);
+				sheetPanels.get(i).writeSheet();
+			}
 		}
 
 		workbook.write();
 		workbook.close();
 	}
-
 }

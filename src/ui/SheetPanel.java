@@ -15,7 +15,7 @@ public abstract class SheetPanel extends JPanel{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8726972994288164262L;
 	private WritableSheet runSheet;
 	public void createSheet(WritableWorkbook workbook, int sheetNumber){
 		runSheet = workbook.createSheet(this.getDescription(),sheetNumber);
@@ -40,6 +40,11 @@ public abstract class SheetPanel extends JPanel{
 				runSheet.addCell(new Label(j,i+1,(String) rowData[j]));
 			}
 		}
+	}
+	public void addRow(Row row) throws RowsExceededException, WriteException{
+		ArrayList<Row> sheetValues = getSheetValues();
+		sheetValues.add(row);
+		this.writeSheet();
 	}
 	protected abstract ArrayList<Row> getSheetValues();
 }

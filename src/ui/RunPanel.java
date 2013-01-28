@@ -3,6 +3,10 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
@@ -13,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import classes.JDependentCheckBox;
 import classes.Row;
 
 public class RunPanel extends SheetPanel{
@@ -124,7 +129,7 @@ public class RunPanel extends SheetPanel{
 		panel.add(chckbxRegister, gbc_chckbxRegister);
 		checkBoxes.add(chckbxRegister);
 		
-		JCheckBox chckbxSell = new JCheckBox("Sell");
+		JCheckBox chckbxSell = new JDependentCheckBox("Sell");
 		chckbxSell.setEnabled(false);
 		GridBagConstraints gbc_chckbxSell = new GridBagConstraints();
 		gbc_chckbxSell.anchor = GridBagConstraints.WEST;
@@ -134,7 +139,7 @@ public class RunPanel extends SheetPanel{
 		panel.add(chckbxSell, gbc_chckbxSell);
 		checkBoxes.add(chckbxSell);
 		
-		JCheckBox chckbxPsi = new JCheckBox("PSI");
+		JCheckBox chckbxPsi = new JDependentCheckBox("PSI");
 		chckbxPsi.setEnabled(false);
 		GridBagConstraints gbc_chckbxPsi = new GridBagConstraints();
 		gbc_chckbxPsi.anchor = GridBagConstraints.WEST;
@@ -144,7 +149,7 @@ public class RunPanel extends SheetPanel{
 		panel.add(chckbxPsi, gbc_chckbxPsi);
 		checkBoxes.add(chckbxPsi);
 		
-		JCheckBox chckbxArbitration = new JCheckBox("Arbitration");
+		JCheckBox chckbxArbitration = new JDependentCheckBox("Arbitration");
 		chckbxArbitration.setEnabled(false);
 		GridBagConstraints gbc_chckbxArbitration = new GridBagConstraints();
 		gbc_chckbxArbitration.anchor = GridBagConstraints.WEST;
@@ -164,7 +169,7 @@ public class RunPanel extends SheetPanel{
 		panel.add(chckbxTitle, gbc_chckbxTitle);
 		checkBoxes.add(chckbxTitle);
 		
-		JCheckBox chckbxPayment = new JCheckBox("Payment");
+		JCheckBox chckbxPayment = new JDependentCheckBox("Payment");
 		chckbxPayment.setEnabled(false);
 		GridBagConstraints gbc_chckbxPayment = new GridBagConstraints();
 		gbc_chckbxPayment.anchor = GridBagConstraints.WEST;
@@ -184,7 +189,7 @@ public class RunPanel extends SheetPanel{
 		panel.add(chckbxGI4142, gbc_chckbxGI4142);
 		checkBoxes.add(chckbxGI4142);
 		
-		JCheckBox chckbxMyPurchases = new JCheckBox("MyPurchases");
+		JCheckBox chckbxMyPurchases = new JDependentCheckBox("MyPurchases");
 		chckbxMyPurchases.setEnabled(false);
 		GridBagConstraints gbc_chckbxMyPurchases = new GridBagConstraints();
 		gbc_chckbxMyPurchases.anchor = GridBagConstraints.WEST;
@@ -201,6 +206,17 @@ public class RunPanel extends SheetPanel{
 		gbc_lblNewLabel.gridy = 2;
 		add(lblNewLabel, gbc_lblNewLabel);
 
+		//Set up dependencies
+		
+		//First for register button.
+		chckbxRegister.addItemListener((ItemListener) chckbxSell);
+		
+		//Then for sell.
+		chckbxSell.addItemListener((ItemListener) chckbxPsi);
+		chckbxSell.addItemListener((ItemListener) chckbxPayment);
+		chckbxSell.addItemListener((ItemListener) chckbxArbitration);
+		chckbxSell.addItemListener((ItemListener) chckbxMyPurchases);
+		
 	}
 
 
@@ -226,6 +242,18 @@ public class RunPanel extends SheetPanel{
 		sheetValues.add(r);
 		
 		return sheetValues;
+	}
+
+
+	public boolean isEnabledSheetPanel(String description) {
+		// TODO Auto-generated method stub
+		for(JCheckBox checkBox : checkBoxes){
+			if(checkBox.getText().equals(description)){
+				return checkBox.isSelected()?true:false;
+			}
+				
+		}
+		return false;
 	}
 
 

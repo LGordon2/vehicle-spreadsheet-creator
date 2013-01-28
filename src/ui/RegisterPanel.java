@@ -246,8 +246,14 @@ public class RegisterPanel extends SheetPanel {
 					for(JComponent field : additionalFields)
 						field.setVisible(true);
 				}else{
-					for(JComponent field : additionalFields)
+					for(JComponent field : additionalFields){
+						if(field instanceof JTextField){
+							((JTextField) field).setText("");
+						}else if(field instanceof JComboBox){
+							((JComboBox) field).setSelectedIndex(0);
+						}
 						field.setVisible(false);
+					}
 				}
 			}
 		});
