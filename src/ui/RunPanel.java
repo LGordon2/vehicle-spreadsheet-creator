@@ -22,8 +22,8 @@ public class RunPanel extends SheetPanel{
 	private static final long serialVersionUID = 1L;
 	private JTextField usernameField;
 	private JPasswordField passwordField;
-	private JComboBox siloDropDown;
-	private JComboBox machineDropDown;
+	private JComboBox<String> siloDropDown;
+	private JComboBox<String> machineDropDown;
 	private ArrayList<JCheckBox> checkBoxes;
 
 	/**
@@ -57,8 +57,8 @@ public class RunPanel extends SheetPanel{
 		add(usernameField, gbc_usernameField);
 		usernameField.setColumns(10);
 		
-		siloDropDown = new JComboBox();
-		siloDropDown.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4"}));
+		siloDropDown = new JComboBox<String>();
+		siloDropDown.setModel(new DefaultComboBoxModel<String>(new String[] {"1", "2", "3", "4"}));
 		GridBagConstraints gbc_siloDropDown = new GridBagConstraints();
 		gbc_siloDropDown.insets = new Insets(0, 0, 5, 5);
 		gbc_siloDropDown.fill = GridBagConstraints.HORIZONTAL;
@@ -91,8 +91,8 @@ public class RunPanel extends SheetPanel{
 		gbc_lblMachine.gridy = 2;
 		add(lblMachine, gbc_lblMachine);
 		
-		machineDropDown = new JComboBox();
-		machineDropDown.setModel(new DefaultComboBoxModel(new String[] {"QLM", "QIM", "QNM", "QMM"}));
+		machineDropDown = new JComboBox<String>();
+		machineDropDown.setModel(new DefaultComboBoxModel<String>(new String[] {"QLM", "QIM", "QNM", "QMM"}));
 		GridBagConstraints gbc_machineDropDown = new GridBagConstraints();
 		gbc_machineDropDown.insets = new Insets(0, 0, 5, 5);
 		gbc_machineDropDown.fill = GridBagConstraints.HORIZONTAL;
