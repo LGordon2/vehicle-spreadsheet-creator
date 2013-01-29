@@ -10,6 +10,8 @@ import javax.swing.JLabel;
 import classes.Row;
 import classes.SheetPanel;
 import javax.swing.JCheckBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class SellPanel extends SheetPanel {
 	public SellPanel() {
@@ -17,9 +19,9 @@ public class SellPanel extends SheetPanel {
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 49, 0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		JLabel lblVehicleCount = new JLabel("Vehicle Count");
@@ -40,6 +42,7 @@ public class SellPanel extends SheetPanel {
 		vehicleCount.setColumns(10);
 		
 		JLabel lblBuyerNumber = new JLabel("Buyer Number");
+		this.addAdditionalField(lblBuyerNumber);
 		GridBagConstraints gbc_lblBuyerNumber = new GridBagConstraints();
 		gbc_lblBuyerNumber.anchor = GridBagConstraints.EAST;
 		gbc_lblBuyerNumber.insets = new Insets(0, 0, 5, 5);
@@ -48,6 +51,7 @@ public class SellPanel extends SheetPanel {
 		add(lblBuyerNumber, gbc_lblBuyerNumber);
 		
 		buyerNumber = new NumberTextField();
+		this.addAdditionalField(buyerNumber);
 		GridBagConstraints gbc_buyerNumber = new GridBagConstraints();
 		gbc_buyerNumber.insets = new Insets(0, 0, 5, 5);
 		gbc_buyerNumber.fill = GridBagConstraints.HORIZONTAL;
@@ -57,6 +61,7 @@ public class SellPanel extends SheetPanel {
 		buyerNumber.setColumns(10);
 		
 		JLabel lblBuyerId = new JLabel("Buyer Id");
+		this.addAdditionalField(lblBuyerId);
 		GridBagConstraints gbc_lblBuyerId = new GridBagConstraints();
 		gbc_lblBuyerId.anchor = GridBagConstraints.EAST;
 		gbc_lblBuyerId.insets = new Insets(0, 0, 5, 5);
@@ -65,6 +70,7 @@ public class SellPanel extends SheetPanel {
 		add(lblBuyerId, gbc_lblBuyerId);
 		
 		buyerId = new NumberTextField();
+		this.addAdditionalField(buyerId);
 		GridBagConstraints gbc_buyerId = new GridBagConstraints();
 		gbc_buyerId.insets = new Insets(0, 0, 5, 5);
 		gbc_buyerId.fill = GridBagConstraints.HORIZONTAL;
@@ -108,6 +114,7 @@ public class SellPanel extends SheetPanel {
 		
 		JCheckBox chckbxVerifyqlm = new JCheckBox("VerifyQLM");
 		GridBagConstraints gbc_chckbxVerifyqlm = new GridBagConstraints();
+		gbc_chckbxVerifyqlm.anchor = GridBagConstraints.WEST;
 		gbc_chckbxVerifyqlm.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxVerifyqlm.gridx = 0;
 		gbc_chckbxVerifyqlm.gridy = 4;
@@ -116,6 +123,7 @@ public class SellPanel extends SheetPanel {
 		
 		JCheckBox chckbxVerifyqtm = new JCheckBox("VerifyQTM");
 		GridBagConstraints gbc_chckbxVerifyqtm = new GridBagConstraints();
+		gbc_chckbxVerifyqtm.anchor = GridBagConstraints.WEST;
 		gbc_chckbxVerifyqtm.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxVerifyqtm.gridx = 0;
 		gbc_chckbxVerifyqtm.gridy = 5;
@@ -124,12 +132,23 @@ public class SellPanel extends SheetPanel {
 		
 		JCheckBox chckbxVerifyods = new JCheckBox("VerifyODS");
 		GridBagConstraints gbc_chckbxVerifyods = new GridBagConstraints();
-		gbc_chckbxVerifyods.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxVerifyods.anchor = GridBagConstraints.WEST;
+		gbc_chckbxVerifyods.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxVerifyods.gridx = 0;
 		gbc_chckbxVerifyods.gridy = 6;
 		add(chckbxVerifyods, gbc_chckbxVerifyods);
 		checkBoxes.add(chckbxVerifyods);
 		
+		JCheckBox chckbxSetAdditionalFields = new JCheckBox("Set additional fields");
+		chckbxSetAdditionalFields.addActionListener(this);
+		GridBagConstraints gbc_chckbxSetAdditionalFields = new GridBagConstraints();
+		gbc_chckbxSetAdditionalFields.anchor = GridBagConstraints.WEST;
+		gbc_chckbxSetAdditionalFields.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxSetAdditionalFields.gridx = 0;
+		gbc_chckbxSetAdditionalFields.gridy = 7;
+		add(chckbxSetAdditionalFields, gbc_chckbxSetAdditionalFields);
+		
+		this.initializeAdditionalFields();
 	}
 
 	/**

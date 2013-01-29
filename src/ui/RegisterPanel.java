@@ -3,8 +3,6 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,7 +30,6 @@ public class RegisterPanel extends SheetPanel {
 	private JTextField saleYear;
 	private JTextField startingEntryNumber;
 	private JCheckBox chckbxNewCheckBox;
-	private ArrayList<JComponent> additionalFields;
 	private JLabel lblInteriorColor;
 	private JTextField interiorColor;
 	private JTextField bodyColor;
@@ -44,7 +41,7 @@ public class RegisterPanel extends SheetPanel {
 	 * Create the panel.
 	 */
 	public RegisterPanel() {
-		additionalFields = new ArrayList<JComponent>();
+		new ArrayList<JComponent>();
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
@@ -72,7 +69,7 @@ public class RegisterPanel extends SheetPanel {
 		add(vehicleCount, gbc_vehicleCount);
 
 		lblInteriorColor = new JLabel("Interior Color");
-		additionalFields.add(lblInteriorColor);
+		this.addAdditionalField(lblInteriorColor);
 		GridBagConstraints gbc_lblInteriorColor = new GridBagConstraints();
 		gbc_lblInteriorColor.anchor = GridBagConstraints.EAST;
 		gbc_lblInteriorColor.insets = new Insets(0, 0, 5, 5);
@@ -81,7 +78,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblInteriorColor, gbc_lblInteriorColor);
 
 		interiorColor = new JTextField();
-		additionalFields.add(interiorColor);
+		this.addAdditionalField(interiorColor);
 		GridBagConstraints gbc_interiorColor = new GridBagConstraints();
 		gbc_interiorColor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_interiorColor.insets = new Insets(0, 0, 5, 5);
@@ -108,7 +105,7 @@ public class RegisterPanel extends SheetPanel {
 		startingEntryNumber.setColumns(10);
 
 		lblBodyColor = new JLabel("Body Color");
-		additionalFields.add(lblBodyColor);
+		this.addAdditionalField(lblBodyColor);
 		GridBagConstraints gbc_lblBodyColor = new GridBagConstraints();
 		gbc_lblBodyColor.insets = new Insets(0, 0, 5, 5);
 		gbc_lblBodyColor.anchor = GridBagConstraints.EAST;
@@ -117,7 +114,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblBodyColor, gbc_lblBodyColor);
 
 		bodyColor = new JTextField();
-		additionalFields.add(bodyColor);
+		this.addAdditionalField(bodyColor);
 		GridBagConstraints gbc_bodyColor = new GridBagConstraints();
 		gbc_bodyColor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_bodyColor.insets = new Insets(0, 0, 5, 5);
@@ -146,7 +143,7 @@ public class RegisterPanel extends SheetPanel {
 		saleNumber.setColumns(10);
 
 		lblTitle = new JLabel("Title");
-		additionalFields.add(lblTitle);
+		this.addAdditionalField(lblTitle);
 		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
 		gbc_lblTitle.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTitle.anchor = GridBagConstraints.EAST;
@@ -155,7 +152,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblTitle, gbc_lblTitle);
 
 		titleComboBox = new JComboBox<String>();
-		additionalFields.add(titleComboBox);
+		this.addAdditionalField(titleComboBox);
 		titleComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"X"}));
 		GridBagConstraints gbc_titleComboBox = new GridBagConstraints();
 		gbc_titleComboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -187,7 +184,7 @@ public class RegisterPanel extends SheetPanel {
 		saleYear.setColumns(10);
 
 		JLabel lblSellerNumber = new JLabel("Seller Number");
-		additionalFields.add(lblSellerNumber);
+		this.addAdditionalField(lblSellerNumber);
 		GridBagConstraints gbc_lblSellerNumber = new GridBagConstraints();
 		gbc_lblSellerNumber.anchor = GridBagConstraints.EAST;
 		gbc_lblSellerNumber.insets = new Insets(0, 0, 5, 5);
@@ -196,7 +193,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblSellerNumber, gbc_lblSellerNumber);
 
 		sellerNumber = new NumberTextField();
-		additionalFields.add(sellerNumber);
+		this.addAdditionalField(sellerNumber);
 		GridBagConstraints gbc_dealerNumber = new GridBagConstraints();
 		gbc_dealerNumber.fill = GridBagConstraints.HORIZONTAL;
 		gbc_dealerNumber.insets = new Insets(0, 0, 5, 5);
@@ -240,23 +237,7 @@ public class RegisterPanel extends SheetPanel {
 		milesRangeHigh.setColumns(10);
 
 		chckbxNewCheckBox = new JCheckBox("Set additional fields");
-		chckbxNewCheckBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(chckbxNewCheckBox.isSelected()){
-					for(JComponent field : additionalFields)
-						field.setVisible(true);
-				}else{
-					for(JComponent field : additionalFields){
-						if(field instanceof JTextField){
-							((JTextField) field).setText("");
-						}else if(field instanceof JComboBox){
-							((JComboBox<?>) field).setSelectedIndex(0);
-						}
-						field.setVisible(false);
-					}
-				}
-			}
-		});
+		chckbxNewCheckBox.addActionListener(this);
 		GridBagConstraints gbc_chckbxNewCheckBox = new GridBagConstraints();
 		gbc_chckbxNewCheckBox.anchor = GridBagConstraints.NORTH;
 		gbc_chckbxNewCheckBox.insets = new Insets(0, 0, 0, 5);
@@ -265,13 +246,6 @@ public class RegisterPanel extends SheetPanel {
 		add(chckbxNewCheckBox, gbc_chckbxNewCheckBox);
 
 		initializeAdditionalFields();
-	}
-
-	private void initializeAdditionalFields() {
-		// TODO Auto-generated method stub
-		for(JComponent field : additionalFields){
-			field.setVisible(false);
-		}
 	}
 
 	@Override

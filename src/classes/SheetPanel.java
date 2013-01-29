@@ -1,9 +1,15 @@
 package classes;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.AbstractButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import jxl.write.Label;
 import jxl.write.WritableSheet;
@@ -12,16 +18,18 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import ui.NumberTextField;
 
-public abstract class SheetPanel extends JPanel{
+public abstract class SheetPanel extends JPanel implements ActionListener{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8726972994288164262L;
 	private WritableSheet runSheet;
 	private ArrayList<SheetPanel> dependentSheets;
+	private ArrayList<JComponent> additionalFields;
 	protected abstract ArrayList<Row> addAdditionalRows(int rowCount);
 
 	public SheetPanel(){
+		additionalFields = new ArrayList<JComponent>();
 		dependentSheets = new ArrayList<SheetPanel>();
 	}
 
@@ -91,5 +99,32 @@ public abstract class SheetPanel extends JPanel{
 		// TODO Auto-generated method stub
 		Random rng = new Random();
 		return rng.nextInt(numberFieldHigh.getNumber()-numberFieldLow.getNumber())+numberFieldLow.getNumber();
+	}
+	
+	public void initializeAdditionalFields() {
+		// TODO Auto-generated method stub
+		for(JComponent field : additionalFields){
+			field.setVisible(false);
+		}
+	}
+	
+	public void addAdditionalField(JComponent component){
+		additionalFields.add(component);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if(((AbstractButton) e.getSource()).isSelected()){
+			for(JComponent field : additionalFields)
+				field.setVisible(true);
+		}else{
+			for(JComponent field : additionalFields){
+				if(field instanceof JTextField){
+					((JTextField) field).setText("");
+				}else if(field instanceof JComboBox){
+					((JComboBox<?>) field).setSelectedIndex(0);
+				}
+				field.setVisible(false);
+			}
+		}
 	}
 }

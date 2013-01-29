@@ -6,8 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,12 +18,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import classes.SheetPanel;
-
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
+import classes.SheetPanel;
 
 
 public class MainApp{

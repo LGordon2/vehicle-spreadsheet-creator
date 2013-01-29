@@ -210,10 +210,10 @@ public class RunPanel extends SheetPanel{
 		chckbxRegister.addItemListener((ItemListener) chckbxSell);
 		
 		//Then for sell.
-		chckbxSell.addItemListener((ItemListener) chckbxPsi);
+		/*chckbxSell.addItemListener((ItemListener) chckbxPsi);
 		chckbxSell.addItemListener((ItemListener) chckbxPayment);
 		chckbxSell.addItemListener((ItemListener) chckbxArbitration);
-		chckbxSell.addItemListener((ItemListener) chckbxMyPurchases);
+		chckbxSell.addItemListener((ItemListener) chckbxMyPurchases);*/
 		
 	}
 
