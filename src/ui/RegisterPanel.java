@@ -36,6 +36,8 @@ public class RegisterPanel extends SheetPanel {
 	private JLabel lblBodyColor;
 	private JComboBox<String> titleComboBox;
 	private JLabel lblTitle;
+	private JLabel lblRegisterType;
+	private JComboBox<String> registerType;
 
 	/**
 	 * Create the panel.
@@ -46,7 +48,7 @@ public class RegisterPanel extends SheetPanel {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
@@ -69,7 +71,7 @@ public class RegisterPanel extends SheetPanel {
 		add(vehicleCount, gbc_vehicleCount);
 
 		lblInteriorColor = new JLabel("Interior Color");
-		this.addAdditionalField(lblInteriorColor);
+		
 		GridBagConstraints gbc_lblInteriorColor = new GridBagConstraints();
 		gbc_lblInteriorColor.anchor = GridBagConstraints.EAST;
 		gbc_lblInteriorColor.insets = new Insets(0, 0, 5, 5);
@@ -78,7 +80,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblInteriorColor, gbc_lblInteriorColor);
 
 		interiorColor = new JTextField();
-		this.addAdditionalField(interiorColor);
+
 		GridBagConstraints gbc_interiorColor = new GridBagConstraints();
 		gbc_interiorColor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_interiorColor.insets = new Insets(0, 0, 5, 5);
@@ -105,7 +107,7 @@ public class RegisterPanel extends SheetPanel {
 		startingEntryNumber.setColumns(10);
 
 		lblBodyColor = new JLabel("Body Color");
-		this.addAdditionalField(lblBodyColor);
+
 		GridBagConstraints gbc_lblBodyColor = new GridBagConstraints();
 		gbc_lblBodyColor.insets = new Insets(0, 0, 5, 5);
 		gbc_lblBodyColor.anchor = GridBagConstraints.EAST;
@@ -114,7 +116,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblBodyColor, gbc_lblBodyColor);
 
 		bodyColor = new JTextField();
-		this.addAdditionalField(bodyColor);
+
 		GridBagConstraints gbc_bodyColor = new GridBagConstraints();
 		gbc_bodyColor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_bodyColor.insets = new Insets(0, 0, 5, 5);
@@ -143,7 +145,7 @@ public class RegisterPanel extends SheetPanel {
 		saleNumber.setColumns(10);
 
 		lblTitle = new JLabel("Title");
-		this.addAdditionalField(lblTitle);
+
 		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
 		gbc_lblTitle.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTitle.anchor = GridBagConstraints.EAST;
@@ -152,7 +154,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblTitle, gbc_lblTitle);
 
 		titleComboBox = new JComboBox<String>();
-		this.addAdditionalField(titleComboBox);
+
 		titleComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"X"}));
 		GridBagConstraints gbc_titleComboBox = new GridBagConstraints();
 		gbc_titleComboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -182,9 +184,26 @@ public class RegisterPanel extends SheetPanel {
 		gbc_saleYear.gridy = 3;
 		add(saleYear, gbc_saleYear);
 		saleYear.setColumns(10);
+		
+		lblRegisterType = new JLabel("Register Type");
+		GridBagConstraints gbc_lblRegisterType = new GridBagConstraints();
+		gbc_lblRegisterType.anchor = GridBagConstraints.EAST;
+		gbc_lblRegisterType.insets = new Insets(0, 0, 5, 5);
+		gbc_lblRegisterType.gridx = 3;
+		gbc_lblRegisterType.gridy = 3;
+		add(lblRegisterType, gbc_lblRegisterType);
+		
+		registerType = new JComboBox<String>();
+		registerType.setModel(new DefaultComboBoxModel<String>(new String[] {"REGIST", "RECON1", "AT_AUCTION"}));
+		GridBagConstraints gbc_registerType = new GridBagConstraints();
+		gbc_registerType.insets = new Insets(0, 0, 5, 5);
+		gbc_registerType.fill = GridBagConstraints.HORIZONTAL;
+		gbc_registerType.gridx = 4;
+		gbc_registerType.gridy = 3;
+		add(registerType, gbc_registerType);
 
 		JLabel lblSellerNumber = new JLabel("Seller Number");
-		this.addAdditionalField(lblSellerNumber);
+		
 		GridBagConstraints gbc_lblSellerNumber = new GridBagConstraints();
 		gbc_lblSellerNumber.anchor = GridBagConstraints.EAST;
 		gbc_lblSellerNumber.insets = new Insets(0, 0, 5, 5);
@@ -193,7 +212,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblSellerNumber, gbc_lblSellerNumber);
 
 		sellerNumber = new NumberTextField();
-		this.addAdditionalField(sellerNumber);
+
 		GridBagConstraints gbc_dealerNumber = new GridBagConstraints();
 		gbc_dealerNumber.fill = GridBagConstraints.HORIZONTAL;
 		gbc_dealerNumber.insets = new Insets(0, 0, 5, 5);
@@ -245,6 +264,17 @@ public class RegisterPanel extends SheetPanel {
 		gbc_chckbxNewCheckBox.gridy = 6;
 		add(chckbxNewCheckBox, gbc_chckbxNewCheckBox);
 
+		//Set up additional fields.
+		this.addAdditionalField(lblSellerNumber);
+		this.addAdditionalField(lblInteriorColor);
+		this.addAdditionalField(interiorColor);
+		this.addAdditionalField(lblBodyColor);
+		this.addAdditionalField(bodyColor);
+		this.addAdditionalField(lblTitle);
+		this.addAdditionalField(titleComboBox);
+		this.addAdditionalField(sellerNumber);
+		this.addAdditionalField(lblRegisterType);
+		this.addAdditionalField(registerType);
 		initializeAdditionalFields();
 	}
 

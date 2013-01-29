@@ -14,14 +14,14 @@ import classes.SheetPanel;
 public class SellPanel extends SheetPanel {
 	public SellPanel() {
 		checkBoxes = new ArrayList<JCheckBox>();
-		
+
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 49, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
-		
+
 		JLabel lblVehicleCount = new JLabel("Vehicle Count");
 		GridBagConstraints gbc_lblVehicleCount = new GridBagConstraints();
 		gbc_lblVehicleCount.insets = new Insets(0, 0, 5, 5);
@@ -29,7 +29,7 @@ public class SellPanel extends SheetPanel {
 		gbc_lblVehicleCount.gridx = 0;
 		gbc_lblVehicleCount.gridy = 0;
 		add(lblVehicleCount, gbc_lblVehicleCount);
-		
+
 		vehicleCount = new NumberTextField();
 		GridBagConstraints gbc_vehicleCount = new GridBagConstraints();
 		gbc_vehicleCount.fill = GridBagConstraints.HORIZONTAL;
@@ -38,18 +38,18 @@ public class SellPanel extends SheetPanel {
 		gbc_vehicleCount.gridy = 0;
 		add(vehicleCount, gbc_vehicleCount);
 		vehicleCount.setColumns(10);
-		
+
 		JLabel lblBuyerNumber = new JLabel("Buyer Number");
-		this.addAdditionalField(lblBuyerNumber);
+
 		GridBagConstraints gbc_lblBuyerNumber = new GridBagConstraints();
 		gbc_lblBuyerNumber.anchor = GridBagConstraints.EAST;
 		gbc_lblBuyerNumber.insets = new Insets(0, 0, 5, 5);
 		gbc_lblBuyerNumber.gridx = 0;
 		gbc_lblBuyerNumber.gridy = 1;
 		add(lblBuyerNumber, gbc_lblBuyerNumber);
-		
+
 		buyerNumber = new NumberTextField();
-		this.addAdditionalField(buyerNumber);
+
 		GridBagConstraints gbc_buyerNumber = new GridBagConstraints();
 		gbc_buyerNumber.insets = new Insets(0, 0, 5, 5);
 		gbc_buyerNumber.fill = GridBagConstraints.HORIZONTAL;
@@ -57,18 +57,19 @@ public class SellPanel extends SheetPanel {
 		gbc_buyerNumber.gridy = 1;
 		add(buyerNumber, gbc_buyerNumber);
 		buyerNumber.setColumns(10);
-		
+
 		JLabel lblBuyerId = new JLabel("Buyer Id");
-		this.addAdditionalField(lblBuyerId);
+
 		GridBagConstraints gbc_lblBuyerId = new GridBagConstraints();
 		gbc_lblBuyerId.anchor = GridBagConstraints.EAST;
 		gbc_lblBuyerId.insets = new Insets(0, 0, 5, 5);
 		gbc_lblBuyerId.gridx = 2;
 		gbc_lblBuyerId.gridy = 1;
 		add(lblBuyerId, gbc_lblBuyerId);
-		
+
 		buyerId = new NumberTextField();
-		this.addAdditionalField(buyerId);
+		buyerId.setText("00");
+
 		GridBagConstraints gbc_buyerId = new GridBagConstraints();
 		gbc_buyerId.insets = new Insets(0, 0, 5, 5);
 		gbc_buyerId.fill = GridBagConstraints.HORIZONTAL;
@@ -76,7 +77,7 @@ public class SellPanel extends SheetPanel {
 		gbc_buyerId.gridy = 1;
 		add(buyerId, gbc_buyerId);
 		buyerId.setColumns(10);
-		
+
 		JLabel lblSalePrice = new JLabel("Sale Price Range");
 		GridBagConstraints gbc_lblSalePrice = new GridBagConstraints();
 		gbc_lblSalePrice.anchor = GridBagConstraints.EAST;
@@ -84,7 +85,7 @@ public class SellPanel extends SheetPanel {
 		gbc_lblSalePrice.gridx = 0;
 		gbc_lblSalePrice.gridy = 2;
 		add(lblSalePrice, gbc_lblSalePrice);
-		
+
 		salePriceLow = new NumberTextField();
 		GridBagConstraints gbc_salePriceLow = new GridBagConstraints();
 		gbc_salePriceLow.insets = new Insets(0, 0, 5, 5);
@@ -93,14 +94,14 @@ public class SellPanel extends SheetPanel {
 		gbc_salePriceLow.gridy = 2;
 		add(salePriceLow, gbc_salePriceLow);
 		salePriceLow.setColumns(10);
-		
+
 		JLabel lblTo = new JLabel("to");
 		GridBagConstraints gbc_lblTo = new GridBagConstraints();
 		gbc_lblTo.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTo.gridx = 2;
 		gbc_lblTo.gridy = 2;
 		add(lblTo, gbc_lblTo);
-		
+
 		salePriceHigh = new NumberTextField();
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
@@ -109,7 +110,7 @@ public class SellPanel extends SheetPanel {
 		gbc_textField.gridy = 2;
 		add(salePriceHigh, gbc_textField);
 		salePriceHigh.setColumns(10);
-		
+
 		JCheckBox chckbxVerifyqlm = new JCheckBox("VerifyQLM");
 		GridBagConstraints gbc_chckbxVerifyqlm = new GridBagConstraints();
 		gbc_chckbxVerifyqlm.anchor = GridBagConstraints.WEST;
@@ -118,7 +119,7 @@ public class SellPanel extends SheetPanel {
 		gbc_chckbxVerifyqlm.gridy = 4;
 		add(chckbxVerifyqlm, gbc_chckbxVerifyqlm);
 		checkBoxes.add(chckbxVerifyqlm);
-		
+
 		JCheckBox chckbxVerifyqtm = new JCheckBox("VerifyQTM");
 		GridBagConstraints gbc_chckbxVerifyqtm = new GridBagConstraints();
 		gbc_chckbxVerifyqtm.anchor = GridBagConstraints.WEST;
@@ -127,7 +128,7 @@ public class SellPanel extends SheetPanel {
 		gbc_chckbxVerifyqtm.gridy = 5;
 		add(chckbxVerifyqtm, gbc_chckbxVerifyqtm);
 		checkBoxes.add(chckbxVerifyqtm);
-		
+
 		JCheckBox chckbxVerifyods = new JCheckBox("VerifyODS");
 		GridBagConstraints gbc_chckbxVerifyods = new GridBagConstraints();
 		gbc_chckbxVerifyods.anchor = GridBagConstraints.WEST;
@@ -136,7 +137,7 @@ public class SellPanel extends SheetPanel {
 		gbc_chckbxVerifyods.gridy = 6;
 		add(chckbxVerifyods, gbc_chckbxVerifyods);
 		checkBoxes.add(chckbxVerifyods);
-		
+
 		JCheckBox chckbxSetAdditionalFields = new JCheckBox("Set additional fields");
 		chckbxSetAdditionalFields.addActionListener(this);
 		GridBagConstraints gbc_chckbxSetAdditionalFields = new GridBagConstraints();
@@ -145,7 +146,12 @@ public class SellPanel extends SheetPanel {
 		gbc_chckbxSetAdditionalFields.gridx = 0;
 		gbc_chckbxSetAdditionalFields.gridy = 7;
 		add(chckbxSetAdditionalFields, gbc_chckbxSetAdditionalFields);
-		
+
+		//Set up additional fields.
+		this.addAdditionalField(lblBuyerId);
+		this.addAdditionalField(buyerNumber);
+		this.addAdditionalField(lblBuyerNumber);
+		this.addAdditionalField(buyerId);
 		this.initializeAdditionalFields();
 	}
 
