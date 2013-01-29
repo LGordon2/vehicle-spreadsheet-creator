@@ -20,6 +20,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import classes.SheetPanel;
+
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableWorkbook;
@@ -121,6 +123,7 @@ public class MainApp{
 		tabbedPane.addTab("Register", null, registerPanel, null);
 		
 		JPanel sellPanel = new SellPanel();
+		((SheetPanel) sellPanel).addDependentSheet((SheetPanel) registerPanel);
 		sheetPanels.add((SheetPanel) sellPanel);
 		tabbedPane.addTab("Sell", null, sellPanel, null);
 
@@ -140,7 +143,6 @@ public class MainApp{
 				sheetPanels.get(i).writeSheet();
 			}
 		}
-
 		workbook.write();
 		workbook.close();
 	}

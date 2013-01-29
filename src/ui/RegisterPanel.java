@@ -3,21 +3,21 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Random;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import classes.Row;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+import classes.SheetPanel;
 
 public class RegisterPanel extends SheetPanel {
 	/**
@@ -37,7 +37,7 @@ public class RegisterPanel extends SheetPanel {
 	private JTextField interiorColor;
 	private JTextField bodyColor;
 	private JLabel lblBodyColor;
-	private JComboBox titleComboBox;
+	private JComboBox<String> titleComboBox;
 	private JLabel lblTitle;
 
 	/**
@@ -45,7 +45,7 @@ public class RegisterPanel extends SheetPanel {
 	 */
 	public RegisterPanel() {
 		additionalFields = new ArrayList<JComponent>();
-		
+
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
@@ -70,7 +70,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_vehicleCount.gridx = 1;
 		gbc_vehicleCount.gridy = 0;
 		add(vehicleCount, gbc_vehicleCount);
-		
+
 		lblInteriorColor = new JLabel("Interior Color");
 		additionalFields.add(lblInteriorColor);
 		GridBagConstraints gbc_lblInteriorColor = new GridBagConstraints();
@@ -79,7 +79,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblInteriorColor.gridx = 3;
 		gbc_lblInteriorColor.gridy = 0;
 		add(lblInteriorColor, gbc_lblInteriorColor);
-		
+
 		interiorColor = new JTextField();
 		additionalFields.add(interiorColor);
 		GridBagConstraints gbc_interiorColor = new GridBagConstraints();
@@ -98,7 +98,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblStartingEntryNumber.gridy = 1;
 		add(lblStartingEntryNumber, gbc_lblStartingEntryNumber);
 
-		startingEntryNumber = new JTextField();
+		startingEntryNumber = new NumberTextField();
 		GridBagConstraints gbc_startingEntryNumber = new GridBagConstraints();
 		gbc_startingEntryNumber.fill = GridBagConstraints.HORIZONTAL;
 		gbc_startingEntryNumber.insets = new Insets(0, 0, 5, 5);
@@ -106,7 +106,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_startingEntryNumber.gridy = 1;
 		add(startingEntryNumber, gbc_startingEntryNumber);
 		startingEntryNumber.setColumns(10);
-		
+
 		lblBodyColor = new JLabel("Body Color");
 		additionalFields.add(lblBodyColor);
 		GridBagConstraints gbc_lblBodyColor = new GridBagConstraints();
@@ -115,7 +115,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblBodyColor.gridx = 3;
 		gbc_lblBodyColor.gridy = 1;
 		add(lblBodyColor, gbc_lblBodyColor);
-		
+
 		bodyColor = new JTextField();
 		additionalFields.add(bodyColor);
 		GridBagConstraints gbc_bodyColor = new GridBagConstraints();
@@ -144,7 +144,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_saleNumber.gridy = 2;
 		add(saleNumber, gbc_saleNumber);
 		saleNumber.setColumns(10);
-		
+
 		lblTitle = new JLabel("Title");
 		additionalFields.add(lblTitle);
 		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
@@ -153,10 +153,10 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblTitle.gridx = 3;
 		gbc_lblTitle.gridy = 2;
 		add(lblTitle, gbc_lblTitle);
-		
-		titleComboBox = new JComboBox();
+
+		titleComboBox = new JComboBox<String>();
 		additionalFields.add(titleComboBox);
-		titleComboBox.setModel(new DefaultComboBoxModel(new String[] {"X"}));
+		titleComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"X"}));
 		GridBagConstraints gbc_titleComboBox = new GridBagConstraints();
 		gbc_titleComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_titleComboBox.insets = new Insets(0, 0, 5, 5);
@@ -238,7 +238,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_milesRangeHigh.gridy = 5;
 		add(milesRangeHigh, gbc_milesRangeHigh);
 		milesRangeHigh.setColumns(10);
-		
+
 		chckbxNewCheckBox = new JCheckBox("Set additional fields");
 		chckbxNewCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -250,7 +250,7 @@ public class RegisterPanel extends SheetPanel {
 						if(field instanceof JTextField){
 							((JTextField) field).setText("");
 						}else if(field instanceof JComboBox){
-							((JComboBox) field).setSelectedIndex(0);
+							((JComboBox<?>) field).setSelectedIndex(0);
 						}
 						field.setVisible(false);
 					}
@@ -288,14 +288,54 @@ public class RegisterPanel extends SheetPanel {
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
 			Row sheetRow = new Row();
 			sheetRow.setData("EntryNumber", String.format( "0%1d", Integer.valueOf(startingEntryNumber.getText())+i ) );
+			sheetRow.setData("SaleNumber", saleNumber.getText());
 			sheetRow.setData("SaleYear", saleYear.getText());
+			sheetRow.setData("VIN", "");
 			sheetRow.setData("RegisterType", "REGIST");
 			sheetRow.setData("SBLU", "");
 			sheetRow.setData("WorkOrderNumber", "");
-			sheetRow.setData("VIN", "");
-			sheetRow.setData("SaleNumber", saleNumber.getText());
 			sheetRow.setData("SellerNumber", sellerNumber.getText());
-			sheetRow.setData("Miles", getRandomMileage());
+			sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
+			sheetRow.setData("BU", "I");
+			sheetRow.setData("Transmission", "A");
+			sheetRow.setData("Title", "X");
+			sheetRow.setData("InteriorColor", "GRN");
+			sheetRow.setData("Color", "BLUE");
+			sheetRow.setData("Offsite", "N");
+			sheetRow.setData("LocationName", "");
+			sheetRow.setData("Address1", "");
+			sheetRow.setData("Address2", "");
+			sheetRow.setData("City", "");
+			sheetRow.setData("State", "");
+			sheetRow.setData("Country", "");
+			sheetRow.setData("ZipCode", "");
+			sheetRow.setData("ContactName", "");
+			sheetRow.setData("Phone", "");
+			sheetRow.setData("Fax", "");
+			sheetRow.setData("VerifyDatabase", "");
+			sheetRow.setData("UploadToGoogle", "N");
+			sheetValues.add(sheetRow);
+		}
+		return sheetValues;
+	}
+
+
+	@Override
+	protected ArrayList<Row> addAdditionalRows(int rowCount) {
+		// TODO Auto-generated method stub
+		ArrayList<Row> sheetValues = new ArrayList<Row>();
+
+		for(int i=0;i<rowCount;i++){
+			Row sheetRow = new Row();
+			sheetRow.setData("EntryNumber", String.format( "0%1d", ((NumberTextField) startingEntryNumber).getNumber()+i+getSheetValues().size() ) );
+			sheetRow.setData("SaleNumber", saleNumber.getText());
+			sheetRow.setData("SaleYear", saleYear.getText());
+			sheetRow.setData("VIN", "");
+			sheetRow.setData("RegisterType", "REGIST");
+			sheetRow.setData("SBLU", "");
+			sheetRow.setData("WorkOrderNumber", "");
+			sheetRow.setData("SellerNumber", sellerNumber.getText());
+			sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
 			sheetRow.setData("BU", "I");
 			sheetRow.setData("Transmission", "A");
 			sheetRow.setData("Title", "X");
@@ -320,10 +360,38 @@ public class RegisterPanel extends SheetPanel {
 		return sheetValues;
 	}
 
-	private String getRandomMileage() {
+	@Override
+	public String[] getHeaders() {
 		// TODO Auto-generated method stub
-		Random rng = new Random();
-		return String.valueOf(rng.nextInt(Integer.valueOf(milesRangeHigh.getText())-Integer.valueOf(milesRangeLow.getText()))+Integer.valueOf(milesRangeLow.getText()));
+		Row sheetRow = new Row();
+		sheetRow.setData("EntryNumber", "" );
+		sheetRow.setData("SaleYear", "");
+		sheetRow.setData("RegisterType", "");
+		sheetRow.setData("SBLU", "");
+		sheetRow.setData("WorkOrderNumber", "");
+		sheetRow.setData("VIN", "");
+		sheetRow.setData("SaleNumber", saleNumber.getText());
+		sheetRow.setData("SellerNumber", sellerNumber.getText());
+		sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
+		sheetRow.setData("BU", "I");
+		sheetRow.setData("Transmission", "A");
+		sheetRow.setData("Title", "X");
+		sheetRow.setData("InteriorColor", "GRN");
+		sheetRow.setData("Color", "BLUE");
+		sheetRow.setData("Offsite", "N");
+		sheetRow.setData("LocationName", "");
+		sheetRow.setData("Address1", "");
+		sheetRow.setData("Address2", "");
+		sheetRow.setData("City", "");
+		sheetRow.setData("State", "");
+		sheetRow.setData("Country", "");
+		sheetRow.setData("ZipCode", "");
+		sheetRow.setData("ContactName", "");
+		sheetRow.setData("Phone", "");
+		sheetRow.setData("Fax", "");
+		sheetRow.setData("VerifyDatabase", "");
+		sheetRow.setData("UploadToGoogle", "N");
+		return sheetRow.getHeaders();
 	}
 
 }

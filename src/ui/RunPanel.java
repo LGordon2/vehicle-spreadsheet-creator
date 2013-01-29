@@ -3,9 +3,6 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
@@ -19,6 +16,7 @@ import javax.swing.JTextField;
 
 import classes.JDependentCheckBox;
 import classes.Row;
+import classes.SheetPanel;
 
 public class RunPanel extends SheetPanel{
 	/**
@@ -254,6 +252,27 @@ public class RunPanel extends SheetPanel{
 				
 		}
 		return false;
+	}
+
+
+	@Override
+	public ArrayList<Row> addAdditionalRows(int rowCount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String[] getHeaders() {
+		// TODO Auto-generated method stub
+		Row r = new Row();
+		r.setData("UserName", usernameField.getText());
+		r.setData("Password", String.valueOf(passwordField.getPassword()));
+		r.setData("Machine", (String) machineDropDown.getSelectedItem() + (String) siloDropDown.getSelectedItem());
+		for(JCheckBox c : checkBoxes){
+			r.setData(c.getText(), c.isSelected()?"Y":"N");
+		}
+		return r.getHeaders();
 	}
 
 

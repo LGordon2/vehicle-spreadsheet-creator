@@ -7,6 +7,11 @@ import javax.swing.JCheckBox;
 
 public class JDependentCheckBox extends JCheckBox implements ItemListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4416213181388210083L;
+
 	public JDependentCheckBox(String string) {
 		// TODO Auto-generated constructor stub
 		super(string);

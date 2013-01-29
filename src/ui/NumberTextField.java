@@ -22,4 +22,7 @@ public class NumberTextField extends JTextField {
 			}
 		});
 	}
+	public int getNumber(){
+		return Integer.valueOf(getText());
+	}
 }
