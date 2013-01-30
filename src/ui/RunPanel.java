@@ -28,7 +28,6 @@ public class RunPanel extends SheetPanel{
 	private JComboBox<String> siloDropDown;
 	private JComboBox<String> machineDropDown;
 	private ArrayList<JCheckBox> checkBoxes;
-
 	/**
 	 * Create the panel.
 	 */
@@ -273,6 +272,14 @@ public class RunPanel extends SheetPanel{
 			r.setData(c.getText(), c.isSelected()?"Y":"N");
 		}
 		return r.getHeaders();
+	}
+
+
+	public void addTabChangerListener(MainApp mainApp) {
+		// TODO Auto-generated method stub
+		for(JCheckBox c : checkBoxes){
+			c.addItemListener(mainApp);
+		}
 	}
 
 

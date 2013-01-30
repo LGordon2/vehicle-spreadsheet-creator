@@ -179,7 +179,7 @@ public class SellPanel extends SheetPanel {
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
 			Row sheetRow = new Row();
 			sheetRow.setData("BuyerNumber", buyerNumber.getText());
-			sheetRow.setData("BuyerID", buyerId.getText());
+			sheetRow.setData("BuyerID", buyerId.getText().equals("")?"00":buyerId.getText());
 			sheetRow.setData("SalePrice", String.valueOf(this.getRandomNumberInRange(salePriceLow, salePriceHigh)));
 			sheetRow.setData("TimeCreated", "");
 			for(JCheckBox c : checkBoxes){

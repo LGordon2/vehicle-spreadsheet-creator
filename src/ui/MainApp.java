@@ -6,16 +6,19 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import jxl.Workbook;
@@ -25,12 +28,14 @@ import jxl.write.WriteException;
 import classes.SheetPanel;
 
 
-public class MainApp{
+public class MainApp implements ItemListener{
 
 	private JFrame frmVehicleSpreadsheetCreator;
 	private ArrayList<SheetPanel> sheetPanels;
 	private JTabbedPane tabbedPane;
 	private RunPanel runPanel;
+	private RegisterPanel registerPanel;
+	private SellPanel sellPanel;
 
 	/**
 	 * Launch the application.
@@ -77,10 +82,11 @@ public class MainApp{
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					createNewExcel();
-				}catch (BiffException e){	
+				}catch (BiffException e){
+					e.printStackTrace();
 				} catch(IOException e){
+					e.printStackTrace();
 				} catch (WriteException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -109,25 +115,21 @@ public class MainApp{
 		frmVehicleSpreadsheetCreator.getContentPane().add(tabbedPane, gbc_tabbedPane);
 
 		runPanel = new RunPanel();
+		runPanel.addTabChangerListener(this);
 		sheetPanels.add((SheetPanel) runPanel);
 		GridBagLayout gridBagLayout_1 = (GridBagLayout) runPanel.getLayout();
 		gridBagLayout_1.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0};
 		gridBagLayout_1.columnWeights = new double[]{0.0, 1.0};
 		tabbedPane.addTab("Run", null, runPanel, null);
 
-		JPanel registerPanel = new RegisterPanel();
-		sheetPanels.add((SheetPanel) registerPanel);
-		tabbedPane.addTab("Register", null, registerPanel, null);
-		
-		JPanel sellPanel = new SellPanel();
+		registerPanel = new RegisterPanel();
+
+		sellPanel = new SellPanel();
 		((SheetPanel) sellPanel).addDependentSheet((SheetPanel) registerPanel);
-		sheetPanels.add((SheetPanel) sellPanel);
-		tabbedPane.addTab("Sell", null, sellPanel, null);
 
 	}
 
 	protected void createNewExcel() throws BiffException, IOException, WriteException {
-		// TODO Auto-generated method stub
 		Map<String, String> env = System.getenv();
 		File folder = new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation");
 		folder.mkdir();
@@ -142,5 +144,22 @@ public class MainApp{
 		}
 		workbook.write();
 		workbook.close();
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		SheetPanel tabPanel = null;
+		if(((JCheckBox) e.getSource()).getText().equals("Register"))
+			tabPanel = registerPanel;
+		else if(((JCheckBox) e.getSource()).getText().equals("Sell"))
+			tabPanel = sellPanel;
+
+		if(((AbstractButton) e.getSource()).isSelected()){
+			sheetPanels.add(tabPanel);
+			tabbedPane.addTab(((JCheckBox) e.getSource()).getText(), null, tabPanel, null);
+		}else{
+			sheetPanels.remove((SheetPanel) tabPanel);
+			tabbedPane.remove(tabPanel);
+		}
 	}
 }
