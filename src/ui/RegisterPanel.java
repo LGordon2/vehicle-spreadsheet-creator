@@ -3,32 +3,45 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
+import classes.Constants;
 import classes.Row;
 import classes.SheetPanel;
+import database.DatabaseConnection;
 
 public class RegisterPanel extends SheetPanel {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField saleNumber;
+	private NumberTextField saleNumber;
 	private NumberTextField sellerNumber;
 	private NumberTextField milesRangeLow;
 	private NumberTextField milesRangeHigh;
-	private JTextField vehicleCount;
-	private JTextField saleYear;
-	private JTextField startingEntryNumber;
+	private NumberTextField vehicleCount;
+	private NumberTextField saleYear;
 	private JCheckBox chckbxNewCheckBox;
 	private JLabel lblInteriorColor;
 	private JTextField interiorColor;
@@ -38,6 +51,7 @@ public class RegisterPanel extends SheetPanel {
 	private JLabel lblTitle;
 	private JLabel lblRegisterType;
 	private JComboBox<String> registerType;
+	private LinkedHashSet<String> entryNumbers;
 
 	/**
 	 * Create the panel.
@@ -47,9 +61,9 @@ public class RegisterPanel extends SheetPanel {
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
 		JLabel lblVehicleCount = new JLabel("Vehicle Count");
@@ -61,6 +75,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblVehicleCount, gbc_lblVehicleCount);
 
 		vehicleCount = new NumberTextField();
+		vehicleCount.setText("0");
 		vehicleCount.setColumns(3);
 
 		GridBagConstraints gbc_vehicleCount = new GridBagConstraints();
@@ -71,7 +86,7 @@ public class RegisterPanel extends SheetPanel {
 		add(vehicleCount, gbc_vehicleCount);
 
 		lblInteriorColor = new JLabel("Interior Color");
-		
+
 		GridBagConstraints gbc_lblInteriorColor = new GridBagConstraints();
 		gbc_lblInteriorColor.anchor = GridBagConstraints.EAST;
 		gbc_lblInteriorColor.insets = new Insets(0, 0, 5, 5);
@@ -89,22 +104,25 @@ public class RegisterPanel extends SheetPanel {
 		add(interiorColor, gbc_interiorColor);
 		interiorColor.setColumns(10);
 
-		JLabel lblStartingEntryNumber = new JLabel("Starting Entry Number");
-		GridBagConstraints gbc_lblStartingEntryNumber = new GridBagConstraints();
-		gbc_lblStartingEntryNumber.anchor = GridBagConstraints.EAST;
-		gbc_lblStartingEntryNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_lblStartingEntryNumber.gridx = 0;
-		gbc_lblStartingEntryNumber.gridy = 1;
-		add(lblStartingEntryNumber, gbc_lblStartingEntryNumber);
+		JLabel lblSaleNumber = new JLabel("Sale Number");
+		GridBagConstraints gbc_lblSaleNumber = new GridBagConstraints();
+		gbc_lblSaleNumber.anchor = GridBagConstraints.EAST;
+		gbc_lblSaleNumber.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSaleNumber.gridx = 0;
+		gbc_lblSaleNumber.gridy = 1;
+		add(lblSaleNumber, gbc_lblSaleNumber);
+		lblSaleNumber.setLabelFor(saleNumber);
 
-		startingEntryNumber = new NumberTextField();
-		GridBagConstraints gbc_startingEntryNumber = new GridBagConstraints();
-		gbc_startingEntryNumber.fill = GridBagConstraints.HORIZONTAL;
-		gbc_startingEntryNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_startingEntryNumber.gridx = 1;
-		gbc_startingEntryNumber.gridy = 1;
-		add(startingEntryNumber, gbc_startingEntryNumber);
-		startingEntryNumber.setColumns(10);
+		saleNumber = new NumberTextField();
+		saleNumber.setText("1");
+
+		GridBagConstraints gbc_saleNumber = new GridBagConstraints();
+		gbc_saleNumber.fill = GridBagConstraints.HORIZONTAL;
+		gbc_saleNumber.insets = new Insets(0, 0, 5, 5);
+		gbc_saleNumber.gridx = 1;
+		gbc_saleNumber.gridy = 1;
+		add(saleNumber, gbc_saleNumber);
+		saleNumber.setColumns(10);
 
 		lblBodyColor = new JLabel("Body Color");
 
@@ -125,24 +143,27 @@ public class RegisterPanel extends SheetPanel {
 		add(bodyColor, gbc_bodyColor);
 		bodyColor.setColumns(10);
 
-		JLabel lblSaleNumber = new JLabel("Sale Number");
-		GridBagConstraints gbc_lblSaleNumber = new GridBagConstraints();
-		gbc_lblSaleNumber.anchor = GridBagConstraints.EAST;
-		gbc_lblSaleNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSaleNumber.gridx = 0;
-		gbc_lblSaleNumber.gridy = 2;
-		add(lblSaleNumber, gbc_lblSaleNumber);
+		JLabel lblSaleYear = new JLabel("Sale Year");
+		GridBagConstraints gbc_lblSaleYear = new GridBagConstraints();
+		gbc_lblSaleYear.anchor = GridBagConstraints.EAST;
+		gbc_lblSaleYear.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSaleYear.gridx = 0;
+		gbc_lblSaleYear.gridy = 2;
+		add(lblSaleYear, gbc_lblSaleYear);
 
-		saleNumber = new NumberTextField();
-		lblSaleNumber.setLabelFor(saleNumber);
-
-		GridBagConstraints gbc_saleNumber = new GridBagConstraints();
-		gbc_saleNumber.fill = GridBagConstraints.HORIZONTAL;
-		gbc_saleNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_saleNumber.gridx = 1;
-		gbc_saleNumber.gridy = 2;
-		add(saleNumber, gbc_saleNumber);
-		saleNumber.setColumns(10);
+		Calendar c = Calendar.getInstance();
+		c.get(Calendar.YEAR);
+		SimpleDateFormat s = new SimpleDateFormat("yyyy");
+		String currentYear = s.format(c.getTime());
+		saleYear = new NumberTextField();
+		saleYear.setText(currentYear);
+		GridBagConstraints gbc_saleYear = new GridBagConstraints();
+		gbc_saleYear.fill = GridBagConstraints.HORIZONTAL;
+		gbc_saleYear.insets = new Insets(0, 0, 5, 5);
+		gbc_saleYear.gridx = 1;
+		gbc_saleYear.gridy = 2;
+		add(saleYear, gbc_saleYear);
+		saleYear.setColumns(10);
 
 		lblTitle = new JLabel("Title");
 
@@ -163,28 +184,30 @@ public class RegisterPanel extends SheetPanel {
 		gbc_titleComboBox.gridy = 2;
 		add(titleComboBox, gbc_titleComboBox);
 
-		JLabel lblSaleYear = new JLabel("Sale Year");
-		GridBagConstraints gbc_lblSaleYear = new GridBagConstraints();
-		gbc_lblSaleYear.anchor = GridBagConstraints.EAST;
-		gbc_lblSaleYear.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSaleYear.gridx = 0;
-		gbc_lblSaleYear.gridy = 3;
-		add(lblSaleYear, gbc_lblSaleYear);
 
-		saleYear = new JTextField();
-		Calendar c = Calendar.getInstance();
-		c.get(Calendar.YEAR);
-		SimpleDateFormat s = new SimpleDateFormat("yyyy");
-		String currentYear = s.format(c.getTime());
-		saleYear.setText(currentYear);
-		GridBagConstraints gbc_saleYear = new GridBagConstraints();
-		gbc_saleYear.fill = GridBagConstraints.HORIZONTAL;
-		gbc_saleYear.insets = new Insets(0, 0, 5, 5);
-		gbc_saleYear.gridx = 1;
-		gbc_saleYear.gridy = 3;
-		add(saleYear, gbc_saleYear);
-		saleYear.setColumns(10);
-		
+		JLabel lblSellerNumber = new JLabel("Seller Number");
+
+		GridBagConstraints gbc_lblSellerNumber = new GridBagConstraints();
+		gbc_lblSellerNumber.anchor = GridBagConstraints.EAST;
+		gbc_lblSellerNumber.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSellerNumber.gridx = 0;
+		gbc_lblSellerNumber.gridy = 3;
+		add(lblSellerNumber, gbc_lblSellerNumber);
+
+		//Set up additional fields.
+		this.addAdditionalField(lblSellerNumber);
+
+		sellerNumber = new NumberTextField();
+
+		GridBagConstraints gbc_dealerNumber = new GridBagConstraints();
+		gbc_dealerNumber.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dealerNumber.insets = new Insets(0, 0, 5, 5);
+		gbc_dealerNumber.gridx = 1;
+		gbc_dealerNumber.gridy = 3;
+		add(sellerNumber, gbc_dealerNumber);
+		sellerNumber.setColumns(10);
+		this.addAdditionalField(sellerNumber);
+
 		lblRegisterType = new JLabel("Register Type");
 		GridBagConstraints gbc_lblRegisterType = new GridBagConstraints();
 		gbc_lblRegisterType.anchor = GridBagConstraints.EAST;
@@ -192,7 +215,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblRegisterType.gridx = 3;
 		gbc_lblRegisterType.gridy = 3;
 		add(lblRegisterType, gbc_lblRegisterType);
-		
+
 		registerType = new JComboBox<String>();
 		registerType.setModel(new DefaultComboBoxModel<String>(new String[] {"REGIST", "RECON1", "AT_AUCTION"}));
 		GridBagConstraints gbc_registerType = new GridBagConstraints();
@@ -202,31 +225,13 @@ public class RegisterPanel extends SheetPanel {
 		gbc_registerType.gridy = 3;
 		add(registerType, gbc_registerType);
 
-		JLabel lblSellerNumber = new JLabel("Seller Number");
-		
-		GridBagConstraints gbc_lblSellerNumber = new GridBagConstraints();
-		gbc_lblSellerNumber.anchor = GridBagConstraints.EAST;
-		gbc_lblSellerNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSellerNumber.gridx = 0;
-		gbc_lblSellerNumber.gridy = 4;
-		add(lblSellerNumber, gbc_lblSellerNumber);
-
-		sellerNumber = new NumberTextField();
-
-		GridBagConstraints gbc_dealerNumber = new GridBagConstraints();
-		gbc_dealerNumber.fill = GridBagConstraints.HORIZONTAL;
-		gbc_dealerNumber.insets = new Insets(0, 0, 5, 5);
-		gbc_dealerNumber.gridx = 1;
-		gbc_dealerNumber.gridy = 4;
-		add(sellerNumber, gbc_dealerNumber);
-		sellerNumber.setColumns(10);
 
 		JLabel lblMiles = new JLabel("Miles Range");
 		GridBagConstraints gbc_lblMiles = new GridBagConstraints();
 		gbc_lblMiles.anchor = GridBagConstraints.EAST;
 		gbc_lblMiles.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMiles.gridx = 0;
-		gbc_lblMiles.gridy = 5;
+		gbc_lblMiles.gridy = 4;
 		add(lblMiles, gbc_lblMiles);
 
 		milesRangeLow = new NumberTextField();
@@ -234,7 +239,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_milesRangeLow.fill = GridBagConstraints.HORIZONTAL;
 		gbc_milesRangeLow.insets = new Insets(0, 0, 5, 5);
 		gbc_milesRangeLow.gridx = 1;
-		gbc_milesRangeLow.gridy = 5;
+		gbc_milesRangeLow.gridy = 4;
 		add(milesRangeLow, gbc_milesRangeLow);
 		milesRangeLow.setColumns(10);
 
@@ -243,7 +248,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblTo.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTo.anchor = GridBagConstraints.EAST;
 		gbc_lblTo.gridx = 2;
-		gbc_lblTo.gridy = 5;
+		gbc_lblTo.gridy = 4;
 		add(lblTo, gbc_lblTo);
 
 		milesRangeHigh = new NumberTextField();
@@ -251,7 +256,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_milesRangeHigh.insets = new Insets(0, 0, 5, 5);
 		gbc_milesRangeHigh.fill = GridBagConstraints.HORIZONTAL;
 		gbc_milesRangeHigh.gridx = 3;
-		gbc_milesRangeHigh.gridy = 5;
+		gbc_milesRangeHigh.gridy = 4;
 		add(milesRangeHigh, gbc_milesRangeHigh);
 		milesRangeHigh.setColumns(10);
 
@@ -259,20 +264,17 @@ public class RegisterPanel extends SheetPanel {
 		chckbxNewCheckBox.addActionListener(this);
 		GridBagConstraints gbc_chckbxNewCheckBox = new GridBagConstraints();
 		gbc_chckbxNewCheckBox.anchor = GridBagConstraints.NORTH;
-		gbc_chckbxNewCheckBox.insets = new Insets(0, 0, 0, 5);
+		gbc_chckbxNewCheckBox.insets = new Insets(0, 0, 5, 5);
 		gbc_chckbxNewCheckBox.gridx = 0;
-		gbc_chckbxNewCheckBox.gridy = 6;
+		gbc_chckbxNewCheckBox.gridy = 5;
 		add(chckbxNewCheckBox, gbc_chckbxNewCheckBox);
-
-		//Set up additional fields.
-		this.addAdditionalField(lblSellerNumber);
+		
 		this.addAdditionalField(lblInteriorColor);
 		this.addAdditionalField(interiorColor);
 		this.addAdditionalField(lblBodyColor);
 		this.addAdditionalField(bodyColor);
 		this.addAdditionalField(lblTitle);
 		this.addAdditionalField(titleComboBox);
-		this.addAdditionalField(sellerNumber);
 		this.addAdditionalField(lblRegisterType);
 		this.addAdditionalField(registerType);
 		initializeAdditionalFields();
@@ -288,10 +290,12 @@ public class RegisterPanel extends SheetPanel {
 	protected ArrayList<Row> getSheetValues() {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
+		this.entryNumbers = (LinkedHashSet<String>) getNextUnregisteredVehicles(Integer.valueOf(vehicleCount.getText()),null);
+		Iterator itr = this.entryNumbers.iterator();
 
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
 			Row sheetRow = new Row();
-			sheetRow.setData("EntryNumber", String.format( "0%1d", Integer.valueOf(startingEntryNumber.getText())+i ) );
+			sheetRow.setData("EntryNumber", (String)itr.next());
 			sheetRow.setData("SaleNumber", saleNumber.getText());
 			sheetRow.setData("SaleYear", saleYear.getText());
 			sheetRow.setData("VIN", "");
@@ -328,10 +332,15 @@ public class RegisterPanel extends SheetPanel {
 	protected ArrayList<Row> addAdditionalRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
+		entryNumbers = (LinkedHashSet<String>) getNextUnregisteredVehicles(rowCount+Integer.valueOf(vehicleCount.getText()), entryNumbers);
+		Iterator<String> itr = entryNumbers.iterator();
+		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
+			itr.next();
+		}
 
 		for(int i=0;i<rowCount;i++){
 			Row sheetRow = new Row();
-			sheetRow.setData("EntryNumber", String.format( "0%1d", ((NumberTextField) startingEntryNumber).getNumber()+i+getSheetValues().size() ) );
+			sheetRow.setData("EntryNumber", (String)itr.next());
 			sheetRow.setData("SaleNumber", saleNumber.getText());
 			sheetRow.setData("SaleYear", saleYear.getText());
 			sheetRow.setData("VIN", "");
@@ -367,35 +376,60 @@ public class RegisterPanel extends SheetPanel {
 	@Override
 	public String[] getHeaders() {
 		// TODO Auto-generated method stub
-		Row sheetRow = new Row();
-		sheetRow.setData("EntryNumber", "" );
-		sheetRow.setData("SaleYear", "");
-		sheetRow.setData("RegisterType", "");
-		sheetRow.setData("SBLU", "");
-		sheetRow.setData("WorkOrderNumber", "");
-		sheetRow.setData("VIN", "");
-		sheetRow.setData("SaleNumber", saleNumber.getText());
-		sheetRow.setData("SellerNumber", sellerNumber.getText());
-		sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
-		sheetRow.setData("BU", "I");
-		sheetRow.setData("Transmission", "A");
-		sheetRow.setData("Title", "X");
-		sheetRow.setData("InteriorColor", "GRN");
-		sheetRow.setData("Color", "BLUE");
-		sheetRow.setData("Offsite", "N");
-		sheetRow.setData("LocationName", "");
-		sheetRow.setData("Address1", "");
-		sheetRow.setData("Address2", "");
-		sheetRow.setData("City", "");
-		sheetRow.setData("State", "");
-		sheetRow.setData("Country", "");
-		sheetRow.setData("ZipCode", "");
-		sheetRow.setData("ContactName", "");
-		sheetRow.setData("Phone", "");
-		sheetRow.setData("Fax", "");
-		sheetRow.setData("VerifyDatabase", "");
-		sheetRow.setData("UploadToGoogle", "N");
-		return sheetRow.getHeaders();
+		return new String[]{"EntryNumber", "SaleYear", "RegisterType", "SBLU", "WorkOrderNumber", "VIN", "SaleNumber",
+				"SellerNumber", "Miles", "BU", "Transmission", "Title", "InteriorColor", "Color", "Offsite",
+				"LocationName", "Address1", "Address2", "City", "State", "Country", "ZipCode", "ContactName",
+				"Phone", "Fax", "VerifyDatabase", "UploadToGoogle"};
 	}
 
+	private Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount){
+		return findUnregisteredVehiclesEntryNumbers(conn, saleNumber, saleYear, requestedCount, null);
+	}
+
+	private Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount, HashSet<String> entryNumbers){
+		if(entryNumbers==null)
+			entryNumbers = new LinkedHashSet<String>();
+		if(requestedCount<1)
+			return entryNumbers;
+		try {
+			Statement stmt = conn.createStatement();
+			for(int laneNumber=1;laneNumber<=Constants.LARGEST_LANE_NUMBER;laneNumber++){
+				for(int runNumber=1;runNumber<=Constants.LARGEST_RUN_NUMBER;runNumber++){
+					ResultSet rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
+					rs.next();
+					if(rs.getInt(1)==0){
+						entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
+						if(entryNumbers.size()==requestedCount)
+							return entryNumbers;
+					}
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return entryNumbers;
+	}
+
+	private Set<String> getNextUnregisteredVehicles(int requestedCount){
+		return getNextUnregisteredVehicles(requestedCount, null);
+	}
+
+	private Set<String> getNextUnregisteredVehicles(int requestedCount, HashSet<String> entryNumbers){
+		Connection conn = DatabaseConnection.getInstance().getConnection();
+		try {
+			Statement stmt = conn.createStatement();
+			if(saleNumber.getText().equals("")){
+				ResultSet rs = stmt.executeQuery("select slane#, srun#, ssale# from macsf.pfvehicle where slane# > 0 and srun# > 100 and ssale# < 10");
+				rs.next();
+				saleNumber.setText(rs.getString("ssale#"));
+			}
+			return findUnregisteredVehiclesEntryNumbers(conn, saleNumber.getNumber(), saleYear.getNumber(), requestedCount, entryNumbers);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+
+	}
 }

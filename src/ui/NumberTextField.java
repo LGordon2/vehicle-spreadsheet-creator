@@ -23,6 +23,8 @@ public class NumberTextField extends JTextField {
 		});
 	}
 	public int getNumber(){
-		return Integer.valueOf(getText());
+		if(!getText().equals(""))
+			return Integer.valueOf(getText());
+		return -1;
 	}
 }

@@ -17,6 +17,10 @@ import javax.swing.JTextField;
 import classes.JDependentCheckBox;
 import classes.Row;
 import classes.SheetPanel;
+import database.DatabaseConnection;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class RunPanel extends SheetPanel{
 	/**
@@ -28,6 +32,10 @@ public class RunPanel extends SheetPanel{
 	private JComboBox<String> siloDropDown;
 	private JComboBox<String> machineDropDown;
 	private ArrayList<JCheckBox> checkBoxes;
+	public static String machineInfo = "";
+	
+	private ActionListener machineUpdater;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -214,6 +222,17 @@ public class RunPanel extends SheetPanel{
 		chckbxSell.addItemListener((ItemListener) chckbxArbitration);
 		chckbxSell.addItemListener((ItemListener) chckbxMyPurchases);*/
 		
+		//Set up machine info.
+		machineUpdater = new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				machineInfo = ((String) machineDropDown.getSelectedItem()) + ((String) siloDropDown.getSelectedItem());
+				DatabaseConnection.getInstance().connectTo("jdbc:as400://M"+machineInfo+"400.MAN.COX.COM");
+			}
+		};
+		siloDropDown.addActionListener(machineUpdater);
+		machineDropDown.addActionListener(machineUpdater);
 	}
 
 
