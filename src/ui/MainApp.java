@@ -29,9 +29,10 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import classes.SheetPanel;
 import database.DatabaseConnection;
+import database.OnStateChangedListener;
 
 
-public class MainApp implements ItemListener{
+public class MainApp implements ItemListener, OnStateChangedListener{
 
 	private JFrame frmVehicleSpreadsheetCreator;
 	private ArrayList<SheetPanel> sheetPanels;
@@ -39,6 +40,7 @@ public class MainApp implements ItemListener{
 	private RunPanel runPanel;
 	private RegisterPanel registerPanel;
 	private SellPanel sellPanel;
+	private static JProgressBar entryNumbersProgressBar = new JProgressBar();
 	private static JProgressBar progressBar = new JProgressBar();
 	/**
 	 * Launch the application.
@@ -68,7 +70,7 @@ public class MainApp implements ItemListener{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		DatabaseConnection.getInstance();
+		DatabaseConnection.getInstance().addOnStateChangeListener(this);
 		sheetPanels = new ArrayList<SheetPanel>();
 		frmVehicleSpreadsheetCreator = new JFrame();
 		frmVehicleSpreadsheetCreator.setIconImage(Toolkit.getDefaultToolkit().getImage(MainApp.class.getResource("/images/manheim.gif")));
@@ -112,9 +114,9 @@ public class MainApp implements ItemListener{
 		mnFile.add(mntmQuit);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 0.0, Double.MIN_VALUE};
 		frmVehicleSpreadsheetCreator.getContentPane().setLayout(gridBagLayout);
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -133,10 +135,18 @@ public class MainApp implements ItemListener{
 		gridBagLayout_1.columnWeights = new double[]{0.0, 1.0};
 		tabbedPane.addTab("Run", null, runPanel, null);
 		
+		GridBagConstraints gbc_entryNumbersProgressBar = new GridBagConstraints();
+		gbc_entryNumbersProgressBar.insets = new Insets(0, 0, 5, 0);
+		gbc_entryNumbersProgressBar.fill = GridBagConstraints.HORIZONTAL;
+		gbc_entryNumbersProgressBar.gridx = 0;
+		gbc_entryNumbersProgressBar.gridy = 1;
+		frmVehicleSpreadsheetCreator.getContentPane().add(entryNumbersProgressBar, gbc_entryNumbersProgressBar);
+		
+		entryNumbersProgressBar.setVisible(false);
 		GridBagConstraints gbc_progressBar = new GridBagConstraints();
 		gbc_progressBar.fill = GridBagConstraints.HORIZONTAL;
 		gbc_progressBar.gridx = 0;
-		gbc_progressBar.gridy = 1;
+		gbc_progressBar.gridy = 2;
 		frmVehicleSpreadsheetCreator.getContentPane().add(progressBar, gbc_progressBar);
 
 		registerPanel = new RegisterPanel();
@@ -152,7 +162,13 @@ public class MainApp implements ItemListener{
 		folder.mkdir();
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation"+File.separator+"MasterDriver.xls"));
 		MainApp.setProgress(10, "Connecting to DB.");
-		while(!DatabaseConnection.getInstance().isConnected()){}
+		while(!DatabaseConnection.getInstance().isConnected()){
+			try{
+				this.wait();
+			}catch(InterruptedException e){
+				System.out.println("Interrupted and connected to DB.");
+			}
+		}
 		MainApp.setProgress(20, "Connected to DB.");
 		
 		for(int i=0;i<sheetPanels.size();i++){
@@ -185,12 +201,41 @@ public class MainApp implements ItemListener{
 		}
 	}
 	
-	public static synchronized void setProgress(int value, String message){
-		progressBar.setValue(value);
+	public static void setProgress(String tag, int value, String message){
+		JProgressBar bar = null;
+		if(tag.equals("EntryNumbers")){
+			bar = entryNumbersProgressBar;
+		}
+		else
+			bar = progressBar;
+		
+		bar.setValue(value);
 		if(message!=null){
-			progressBar.setString(message);
-			progressBar.setStringPainted(true);
+			bar.setString(message);
+			bar.setStringPainted(true);
 		}else
-			progressBar.setStringPainted(false);
+			bar.setStringPainted(false);
+	}
+	
+	public static synchronized void setProgress(int value, String message){
+		MainApp.setProgress("", value, message);
+	}
+
+	public static void setProgressBarVisible(String tag, boolean visible){
+		JProgressBar bar = null;
+		if(tag.equals("EntryNumbers")){
+			bar = entryNumbersProgressBar;
+		}
+		bar.setVisible(visible);
+	}
+	
+	@Override
+	public void onDBStateChange() {
+		// TODO Auto-generated method stub
+		try{
+			this.notifyAll();
+		}catch(IllegalMonitorStateException e){
+			System.out.println("DB is connected: "+DatabaseConnection.getInstance().isConnected());
+		}
 	}
 }

@@ -3,6 +3,7 @@ package database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import classes.Constants;
@@ -13,10 +14,22 @@ public class DatabaseConnection {
     private String connectionState;
     private Connection connection;
     public String url;
+    private ArrayList<OnStateChangedListener> onStateChangedListeners;
 
 	// Private constructor prevents instantiation from other classes
     private DatabaseConnection() { 
+    	onStateChangedListeners = new ArrayList<OnStateChangedListener>();
     	connectTo(Constants.DEFAULT_DB_URL);
+    }
+    
+    public void addOnStateChangeListener(OnStateChangedListener o){
+    	onStateChangedListeners.add(o);
+    }
+    
+    private void stateChanged(){
+    	for(OnStateChangedListener o : onStateChangedListeners){
+    		o.onDBStateChange();
+    	}
     }
     
     public boolean isConnected(){
@@ -42,6 +55,7 @@ public class DatabaseConnection {
     }
 	private Connection setUpConnection(String url) throws SQLException {
 		connectionState = Constants.DB_CONNECTING;
+		stateChanged();
 		Connection conn = null;
 		Properties connectionProps = new Properties();
 		connectionProps.put("user", "lgordon");
@@ -50,6 +64,7 @@ public class DatabaseConnection {
 		conn = DriverManager.getConnection(url, connectionProps);
 		System.out.println("Connected to database");
 		connectionState = Constants.DB_CONNECTED;
+		stateChanged();
 		this.url = url;
 		return conn;
 	}

@@ -3,8 +3,6 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,29 +11,23 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import classes.Constants;
 import classes.Row;
 import classes.SheetPanel;
-
-import com.ibm.as400.access.AS400JDBCDriver;
-
 import database.DatabaseConnection;
 
 public class RegisterPanel extends SheetPanel {
@@ -58,13 +50,13 @@ public class RegisterPanel extends SheetPanel {
 	private JLabel lblTitle;
 	private JLabel lblRegisterType;
 	private JComboBox<String> registerType;
-	private LinkedHashSet<String> entryNumbers;
+	private Set<String> entryNumbers;
 
 	/**
 	 * Create the panel.
 	 */
 	public RegisterPanel() {
-		new ArrayList<JComponent>();
+		this.entryNumbers = new ConcurrentSkipListSet<String>();
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
@@ -312,22 +304,26 @@ public class RegisterPanel extends SheetPanel {
 		@Override
 		public void run() {
 			try {
+				if(RegisterPanel.this.entryNumbers.contains(String.format("%1$02d%2$04d", laneNumber, runNumber)))
+					return;
 				Connection conn = null;
 				Properties connectionProps = new Properties();
 				connectionProps.put("user", "lgordon");
 				connectionProps.put("password", "orasi101");
 
-				conn = DriverManager.getConnection(Constants.DEFAULT_DB_URL, connectionProps);
+				conn = DriverManager.getConnection(DatabaseConnection.getInstance().url, connectionProps);
 				Statement stmt = conn.createStatement();
 				ResultSet rs;
 				rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
 				rs.next();
 				if(rs.getInt(1)==0){
 					RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
+					System.out.println("Entry numbers size: "+RegisterPanel.this.entryNumbers.size());
 				}
+				notifyPanel();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("DB connection issue.");
 			}
 
 		}
@@ -335,10 +331,11 @@ public class RegisterPanel extends SheetPanel {
 	}
 
 	@Override
-	protected synchronized ArrayList<Row> getSheetValues() {
+	protected ArrayList<Row> getSheetValues() {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		this.entryNumbers = (LinkedHashSet<String>) getNextUnregisteredVehicles(Integer.valueOf(vehicleCount.getText()),null);
+		if(entryNumbers.size()<1)
+			this.entryNumbers = getNextUnregisteredVehicles(vehicleCount.getNumber(),null);
 		Iterator<String> itr = this.entryNumbers.iterator();
 
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
@@ -372,6 +369,7 @@ public class RegisterPanel extends SheetPanel {
 			sheetRow.setData("UploadToGoogle", "N");
 			sheetValues.add(sheetRow);
 		}
+
 		return sheetValues;
 	}
 
@@ -380,9 +378,9 @@ public class RegisterPanel extends SheetPanel {
 	protected ArrayList<Row> addAdditionalRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		entryNumbers = (LinkedHashSet<String>) getNextUnregisteredVehicles(rowCount+Integer.valueOf(vehicleCount.getText()), entryNumbers);
-		Iterator<String> itr = entryNumbers.iterator();
-		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
+		this.entryNumbers = getNextUnregisteredVehicles(rowCount+vehicleCount.getNumber(),this.entryNumbers);
+		Iterator<String> itr = this.entryNumbers.iterator();
+		for(int i=0;i<this.entryNumbers.size()-rowCount;i++){
 			itr.next();
 		}
 
@@ -430,39 +428,40 @@ public class RegisterPanel extends SheetPanel {
 				"Phone", "Fax", "VerifyDatabase", "UploadToGoogle"};
 	}
 
-	@SuppressWarnings("unused")
-	private Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount){
-		return findUnregisteredVehiclesEntryNumbers(conn, saleNumber, saleYear, requestedCount, null);
-	}
-
-	private Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount, HashSet<String> entryNumbers){
-		if(this.entryNumbers==null)
-			this.entryNumbers = new LinkedHashSet<String>();
+	private synchronized Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount, Set<String> entryNumbers){
+		if(entryNumbers==null)
+			this.entryNumbers.clear();
 		if(requestedCount<1)
 			return this.entryNumbers;
-		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(20, 20, 1, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.DiscardPolicy());
-		RegisterPanel.this.entryNumbers = new LinkedHashSet<String>();
+		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(Constants.MAX_THREAD_COUNT, Constants.MAX_THREAD_COUNT, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.DiscardPolicy());
 		for(int laneNumber=1;laneNumber<=Constants.LARGEST_LANE_NUMBER;laneNumber++){
 			for(int runNumber=1;runNumber<=Constants.LARGEST_RUN_NUMBER;runNumber++){
 				threadPool.execute(new QueryDBTask(laneNumber, runNumber, saleNumber, saleYear));
 				if(this.entryNumbers.size()>=requestedCount){
 					threadPool.shutdownNow();
-					System.out.println("done in loop!");
 					return this.entryNumbers;
 				}
 			}
 		}
-		while(this.entryNumbers.size()<requestedCount){System.out.println("Entry numbers size: "+this.entryNumbers.size());}
+		while(this.entryNumbers.size()<requestedCount){
+			try{
+				MainApp.setProgressBarVisible("EntryNumbers",true);
+				MainApp.setProgress("EntryNumbers", this.entryNumbers.size()*100/requestedCount, "Entry numbers: "+this.entryNumbers.size()+"/"+requestedCount);
+				wait();
+			}catch(InterruptedException e){}
+		}
+		MainApp.setProgressBarVisible("EntryNumbers",false);
+		MainApp.setProgress("EntryNumbers", 0, "");
 		threadPool.shutdownNow();
 		return this.entryNumbers;
 	}
 
-	@SuppressWarnings("unused")
-	private Set<String> getNextUnregisteredVehicles(int requestedCount){
-		return getNextUnregisteredVehicles(requestedCount, null);
+	public synchronized void notifyPanel(){
+		notifyAll();
 	}
 
-	private Set<String> getNextUnregisteredVehicles(int requestedCount, HashSet<String> entryNumbers){
+
+	private Set<String> getNextUnregisteredVehicles(int requestedCount, Set<String> entryNumbers){
 		Connection conn = DatabaseConnection.getInstance().getConnection();
 		try {
 			Statement stmt = conn.createStatement();

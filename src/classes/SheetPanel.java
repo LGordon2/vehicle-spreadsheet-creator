@@ -53,7 +53,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		ArrayList<Row> sheetValues = getSheetValues();
 
 		writeHeaders(sheetValues.size()>0?sheetValues.get(0).getHeaders():getHeaders());
-		writeSheetValues(null,0);
+		writeSheetValues(sheetValues,0);
 		
 		if(dependentSheets.size()>0)
 			writeDependentSheets();
@@ -83,7 +83,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		ArrayList<Row> mSheetData = getSheetValues();
 		ArrayList<Row> additionalData = new ArrayList<Row>();
 		for(SheetPanel s : dependentSheets){
-			additionalData = s.writeAdditionalRows(getSheetValues().size());
+			additionalData = s.writeAdditionalRows(mSheetData.size());
 			for(int i=0;i<mSheetData.size();i++){
 				mSheetData.get(i).putAll(additionalData.get(i));
 			}
