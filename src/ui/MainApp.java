@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 
@@ -152,11 +151,14 @@ public class MainApp implements ItemListener{
 		File folder = new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation");
 		folder.mkdir();
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation"+File.separator+"MasterDriver.xls"));
-		MainApp.setProgress(10, "Creating file.");
+		MainApp.setProgress(10, "Connecting to DB.");
+		while(!DatabaseConnection.getInstance().isConnected()){}
+		MainApp.setProgress(20, "Connected to DB.");
+		
 		for(int i=0;i<sheetPanels.size();i++){
 			if(runPanel.isEnabledSheetPanel(sheetPanels.get(i).getDescription()) || 
 					sheetPanels.get(i).getDescription().equals(runPanel.getDescription())){
-				MainApp.setProgress(10+(80/sheetPanels.size())*(i+1), "Creating sheet: "+sheetPanels.get(i).getDescription());
+				MainApp.setProgress(20+(70/sheetPanels.size())*(i+1), "Creating sheet: "+sheetPanels.get(i).getDescription());
 				sheetPanels.get(i).createSheet(workbook, i);
 				sheetPanels.get(i).writeSheet();
 			}

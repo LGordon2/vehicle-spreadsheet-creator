@@ -6,6 +6,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,7 +16,11 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -23,12 +28,14 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
 import classes.Constants;
 import classes.Row;
 import classes.SheetPanel;
+
+import com.ibm.as400.access.AS400JDBCDriver;
+
 import database.DatabaseConnection;
 
 public class RegisterPanel extends SheetPanel {
@@ -268,7 +275,7 @@ public class RegisterPanel extends SheetPanel {
 		gbc_chckbxNewCheckBox.gridx = 0;
 		gbc_chckbxNewCheckBox.gridy = 5;
 		add(chckbxNewCheckBox, gbc_chckbxNewCheckBox);
-		
+
 		this.addAdditionalField(lblInteriorColor);
 		this.addAdditionalField(interiorColor);
 		this.addAdditionalField(lblBodyColor);
@@ -286,12 +293,53 @@ public class RegisterPanel extends SheetPanel {
 		return "Register";
 	}
 
+	private class QueryDBTask implements Runnable{
+
+		private int laneNumber;
+		private int runNumber;
+		private int saleNumber;
+		private int saleYear;
+
+		public QueryDBTask(int laneNumber, int runNumber, int saleNumber,
+				int saleYear) {
+			// TODO Auto-generated constructor stub
+			this.laneNumber = laneNumber;
+			this.runNumber = runNumber;
+			this.saleNumber = saleNumber;
+			this.saleYear = saleYear;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Connection conn = null;
+				Properties connectionProps = new Properties();
+				connectionProps.put("user", "lgordon");
+				connectionProps.put("password", "orasi101");
+
+				conn = DriverManager.getConnection(Constants.DEFAULT_DB_URL, connectionProps);
+				Statement stmt = conn.createStatement();
+				ResultSet rs;
+				rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
+				rs.next();
+				if(rs.getInt(1)==0){
+					RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
 	@Override
-	protected ArrayList<Row> getSheetValues() {
+	protected synchronized ArrayList<Row> getSheetValues() {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		this.entryNumbers = (LinkedHashSet<String>) getNextUnregisteredVehicles(Integer.valueOf(vehicleCount.getText()),null);
-		Iterator itr = this.entryNumbers.iterator();
+		Iterator<String> itr = this.entryNumbers.iterator();
 
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
 			Row sheetRow = new Row();
@@ -382,35 +430,34 @@ public class RegisterPanel extends SheetPanel {
 				"Phone", "Fax", "VerifyDatabase", "UploadToGoogle"};
 	}
 
+	@SuppressWarnings("unused")
 	private Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount){
 		return findUnregisteredVehiclesEntryNumbers(conn, saleNumber, saleYear, requestedCount, null);
 	}
 
 	private Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount, HashSet<String> entryNumbers){
-		if(entryNumbers==null)
-			entryNumbers = new LinkedHashSet<String>();
+		if(this.entryNumbers==null)
+			this.entryNumbers = new LinkedHashSet<String>();
 		if(requestedCount<1)
-			return entryNumbers;
-		try {
-			Statement stmt = conn.createStatement();
-			for(int laneNumber=1;laneNumber<=Constants.LARGEST_LANE_NUMBER;laneNumber++){
-				for(int runNumber=1;runNumber<=Constants.LARGEST_RUN_NUMBER;runNumber++){
-					ResultSet rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
-					rs.next();
-					if(rs.getInt(1)==0){
-						entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
-						if(entryNumbers.size()==requestedCount)
-							return entryNumbers;
-					}
+			return this.entryNumbers;
+		ThreadPoolExecutor threadPool = new ThreadPoolExecutor(20, 20, 1, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.DiscardPolicy());
+		RegisterPanel.this.entryNumbers = new LinkedHashSet<String>();
+		for(int laneNumber=1;laneNumber<=Constants.LARGEST_LANE_NUMBER;laneNumber++){
+			for(int runNumber=1;runNumber<=Constants.LARGEST_RUN_NUMBER;runNumber++){
+				threadPool.execute(new QueryDBTask(laneNumber, runNumber, saleNumber, saleYear));
+				if(this.entryNumbers.size()>=requestedCount){
+					threadPool.shutdownNow();
+					System.out.println("done in loop!");
+					return this.entryNumbers;
 				}
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return entryNumbers;
+		while(this.entryNumbers.size()<requestedCount){System.out.println("Entry numbers size: "+this.entryNumbers.size());}
+		threadPool.shutdownNow();
+		return this.entryNumbers;
 	}
 
+	@SuppressWarnings("unused")
 	private Set<String> getNextUnregisteredVehicles(int requestedCount){
 		return getNextUnregisteredVehicles(requestedCount, null);
 	}

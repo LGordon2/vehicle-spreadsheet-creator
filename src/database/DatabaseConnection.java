@@ -12,6 +12,7 @@ import com.ibm.as400.access.AS400JDBCDriver;
 public class DatabaseConnection {
     private String connectionState;
     private Connection connection;
+    public String url;
 
 	// Private constructor prevents instantiation from other classes
     private DatabaseConnection() { 
@@ -49,6 +50,7 @@ public class DatabaseConnection {
 		conn = DriverManager.getConnection(url, connectionProps);
 		System.out.println("Connected to database");
 		connectionState = Constants.DB_CONNECTED;
+		this.url = url;
 		return conn;
 	}
 	

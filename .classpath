@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/jxl.jar"/>
 	<classpathentry kind="lib" path="res"/>
-	<classpathentry kind="lib" path="//msc-qc-01/Settlement/DataFiles/lew/jt400.jar"/>
+	<classpathentry kind="lib" path="libs/jt400.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
