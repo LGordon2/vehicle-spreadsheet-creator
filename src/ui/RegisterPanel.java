@@ -12,9 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +56,7 @@ public class RegisterPanel extends SheetPanel {
 	 * Create the panel.
 	 */
 	public RegisterPanel() {
-		this.entryNumbers = new ConcurrentSkipListSet<String>();
+		this.entryNumbers = new LinkedHashSet<String>();
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
@@ -317,13 +317,15 @@ public class RegisterPanel extends SheetPanel {
 				rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
 				rs.next();
 				if(rs.getInt(1)==0){
-					RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
-					System.out.println("Entry numbers size: "+RegisterPanel.this.entryNumbers.size());
+					synchronized(this){
+						RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
+						System.out.println("Entry numbers size: "+RegisterPanel.this.entryNumbers.size());
+					}
 				}
 				notifyPanel();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				System.err.println("DB connection issue.");
+				//System.err.println("DB connection issue.");
 			}
 
 		}
@@ -334,13 +336,14 @@ public class RegisterPanel extends SheetPanel {
 	protected ArrayList<Row> getSheetValues() {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		if(entryNumbers.size()<1)
-			this.entryNumbers = getNextUnregisteredVehicles(vehicleCount.getNumber(),null);
+		//if(entryNumbers.size()<1)
+		this.entryNumbers = getNextUnregisteredVehicles(vehicleCount.getNumber(),this.entryNumbers);
+		System.out.println("****Entry numbers size: "+this.entryNumbers.size());
 		Iterator<String> itr = this.entryNumbers.iterator();
 
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
 			Row sheetRow = new Row();
-			sheetRow.setData("EntryNumber", (String)itr.next());
+			sheetRow.setData("EntryNumber", itr.next());
 			sheetRow.setData("SaleNumber", saleNumber.getText());
 			sheetRow.setData("SaleYear", saleYear.getText());
 			sheetRow.setData("VIN", "");
@@ -379,6 +382,7 @@ public class RegisterPanel extends SheetPanel {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		this.entryNumbers = getNextUnregisteredVehicles(rowCount+vehicleCount.getNumber(),this.entryNumbers);
+		System.out.println("****Entry numbers size: "+this.entryNumbers.size());
 		Iterator<String> itr = this.entryNumbers.iterator();
 		for(int i=0;i<this.entryNumbers.size()-rowCount;i++){
 			itr.next();
@@ -386,7 +390,7 @@ public class RegisterPanel extends SheetPanel {
 
 		for(int i=0;i<rowCount;i++){
 			Row sheetRow = new Row();
-			sheetRow.setData("EntryNumber", (String)itr.next());
+			sheetRow.setData("EntryNumber", itr.next());
 			sheetRow.setData("SaleNumber", saleNumber.getText());
 			sheetRow.setData("SaleYear", saleYear.getText());
 			sheetRow.setData("VIN", "");
