@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -56,7 +57,7 @@ public class RegisterPanel extends SheetPanel {
 	 * Create the panel.
 	 */
 	public RegisterPanel() {
-		this.entryNumbers = new LinkedHashSet<String>();
+		this.entryNumbers = Collections.synchronizedSet(new LinkedHashSet<String>());
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
@@ -317,10 +318,8 @@ public class RegisterPanel extends SheetPanel {
 				rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
 				rs.next();
 				if(rs.getInt(1)==0){
-					synchronized(this){
-						RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
-						System.out.println("Entry numbers size: "+RegisterPanel.this.entryNumbers.size());
-					}
+					RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
+					System.out.println("Entry numbers size: "+RegisterPanel.this.entryNumbers.size());
 				}
 				notifyPanel();
 			} catch (SQLException e) {
