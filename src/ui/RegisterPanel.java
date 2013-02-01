@@ -345,7 +345,7 @@ public class RegisterPanel extends SheetPanel {
 				notifyPanel();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 
 		}
@@ -397,7 +397,7 @@ public class RegisterPanel extends SheetPanel {
 	protected ArrayList<Row> addAdditionalRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		this.entryNumbers = getNextUnregisteredVehicles(rowCount+vehicleCount.getNumber(),this.entryNumbers);
+		this.entryNumbers = getNextUnregisteredVehicles(rowCount+this.entryNumbers.size(),this.entryNumbers);
 		Iterator<String> itr = this.entryNumbers.iterator();
 		for(int i=0;i<this.entryNumbers.size()-rowCount;i++){
 			itr.next();

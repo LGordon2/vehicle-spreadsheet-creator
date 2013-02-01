@@ -40,6 +40,7 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 	private RunPanel runPanel;
 	private RegisterPanel registerPanel;
 	private SellPanel sellPanel;
+	private PsiPanel psiPanel;
 	private static JProgressBar entryNumbersProgressBar = new JProgressBar();
 	private static JProgressBar progressBar = new JProgressBar();
 	/**
@@ -153,6 +154,9 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 
 		sellPanel = new SellPanel();
 		((SheetPanel) sellPanel).addDependentSheet((SheetPanel) registerPanel);
+		
+		psiPanel = new PsiPanel();
+		((SheetPanel) psiPanel).addDependentSheet((SheetPanel) sellPanel);
 
 	}
 
@@ -191,6 +195,8 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 			tabPanel = registerPanel;
 		else if(((JCheckBox) e.getSource()).getText().equals("Sell"))
 			tabPanel = sellPanel;
+		else if(((JCheckBox) e.getSource()).getText().equals("PSI"))
+			tabPanel = psiPanel;
 
 		if(((AbstractButton) e.getSource()).isSelected()){
 			sheetPanels.add(tabPanel);

@@ -26,6 +26,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	private WritableSheet runSheet;
 	private ArrayList<SheetPanel> dependentSheets;
 	private ArrayList<JComponent> additionalFields;
+	private int dataRows;
 	protected abstract ArrayList<Row> addAdditionalRows(int rowCount);
 
 	public SheetPanel(){
@@ -35,7 +36,8 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 
 	private ArrayList<Row> writeAdditionalRows(int rowCount) throws RowsExceededException, WriteException{
 		ArrayList<Row> additionalRows = addAdditionalRows(rowCount);
-		writeSheetValues(additionalRows, getSheetValues().size());
+		writeSheetValues(additionalRows, dataRows);
+		dataRows += rowCount;
 		return additionalRows;
 	}
 
@@ -52,15 +54,20 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		// TODO Auto-generated method stub
 		initializeValues();
 		ArrayList<Row> sheetValues = getSheetValues();
+		this.dataRows = 0;  
 
-		writeHeaders(sheetValues.size()>0?sheetValues.get(0).getHeaders():getHeaders());
-		writeSheetValues(sheetValues,0);
-		
-		if(dependentSheets.size()>0)
-			writeDependentSheets();
+		writeDependentSheets(sheetValues.size());
 	}
+	
+	/**
+	 * Writes values to the current sheet.
+	 * @param sheetValues - Values to be written.
+	 * @param rowOffset - The starting row (
+	 * @throws RowsExceededException
+	 * @throws WriteException
+	 */
 	private void writeSheetValues(ArrayList<Row> sheetValues, int rowOffset) throws RowsExceededException, WriteException{
-		
+
 		if(sheetValues==null)
 			sheetValues = getSheetValues();
 		//Write the data.
@@ -83,11 +90,39 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		dependentSheets.add(panel);
 	}
 
-	private void writeDependentSheets() throws RowsExceededException, WriteException {
-		// TODO Auto-generated method stub
-		ArrayList<Row> mSheetData = getSheetValues();
-		ArrayList<Row> additionalData = new ArrayList<Row>();
+	private ArrayList<Row> writeDependentSheets(int additionalRows) throws RowsExceededException, WriteException {
+		//Initialize and get our data.
+		ArrayList<Row> mSheetData = getSheetRows(additionalRows);
+		ArrayList<Row> additionalData;
+		
+		//If no dependent sheets write and return the rows.
+		if(dependentSheets.size()==0){
+			//Write
+			additionalData = this.getSheetRows(additionalRows);
+			writeHeaders(additionalData.get(0).getHeaders());
+			writeSheetValues(mSheetData,getSheetValues().size()+1);
+			//Return
+			return additionalData;
+		}
+		
+		//Request data from dependent sheets.
+		additionalData = dependentSheets.get(0).writeDependentSheets(additionalRows);
+		//Merge additional data from dependentSheets.
+		assert mSheetData.size() == additionalData.size();
+		for(int i=0;i<additionalData.size();i++){
+			mSheetData.get(i).putAll(additionalData.get(i));
+		}
+		
+		//Write it to the data sheet.
+		writeHeaders(mSheetData.get(0).getHeaders());
+		writeSheetValues(mSheetData,dataRows);
+		dataRows += additionalData.size();
+		return mSheetData;
+		/*
 		for(SheetPanel s : dependentSheets){
+			for(SheetPanel panel : s.dependentSheets){
+				panel.writeAdditionalRows(additionalRows);
+			}
 			additionalData = s.writeAdditionalRows(mSheetData.size());
 			for(int i=0;i<mSheetData.size();i++){
 				mSheetData.get(i).putAll(additionalData.get(i));
@@ -95,28 +130,33 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		}
 
 		writeHeaders(mSheetData.get(0).getHeaders());
-		writeSheetValues(mSheetData,0);
+		writeSheetValues(mSheetData,0);*/
 	}
-	
+
+	private ArrayList<Row> getSheetRows(int additionalRows) {
+		// TODO Auto-generated method stub
+		return addAdditionalRows(additionalRows);
+	}
+
 	public abstract String[] getHeaders();
-	
+
 	public int getRandomNumberInRange(NumberTextField numberFieldLow, NumberTextField numberFieldHigh) {
 		// TODO Auto-generated method stub
 		Random rng = new Random();
 		return rng.nextInt(numberFieldHigh.getNumber()-numberFieldLow.getNumber())+numberFieldLow.getNumber();
 	}
-	
+
 	public void initializeAdditionalFields() {
 		// TODO Auto-generated method stub
 		for(JComponent field : additionalFields){
 			field.setVisible(false);
 		}
 	}
-	
+
 	public void addAdditionalField(JComponent component){
 		additionalFields.add(component);
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 		if(((AbstractButton) e.getSource()).isSelected()){
 			for(JComponent field : additionalFields)
@@ -134,5 +174,9 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	}
 	public synchronized void notifyPanel(){
 		notifyAll();
+	}
+	
+	private ArrayList<Row> getAdditionalRows(int numberRows){
+		return addAdditionalRows(numberRows);
 	}
 }

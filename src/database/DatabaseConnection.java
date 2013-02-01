@@ -20,9 +20,9 @@ public class DatabaseConnection {
 	// Private constructor prevents instantiation from other classes
     private DatabaseConnection() { 
     	onStateChangedListeners = new ArrayList<OnStateChangedListener>();
-		Properties connectionProps = new Properties();
-		connectionProps.put("user", Constants.DEFAULT_USERNAME);
-		connectionProps.put("password", Constants.DEFAULT_PASSWORD);
+		this.connectionProps = new Properties();
+		this.connectionProps.put("user", Constants.DEFAULT_USERNAME);
+		this.connectionProps.put("password", Constants.DEFAULT_PASSWORD);
     	connectTo(Constants.DEFAULT_DB_URL);
     }
     

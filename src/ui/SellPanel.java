@@ -177,15 +177,7 @@ public class SellPanel extends SheetPanel {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
-			Row sheetRow = new Row();
-			sheetRow.setData("BuyerNumber", buyerNumber.getText());
-			sheetRow.setData("BuyerID", buyerId.getText().equals("")?"00":buyerId.getText());
-			sheetRow.setData("SalePrice", String.valueOf(this.getRandomNumberInRange(salePriceLow, salePriceHigh)));
-			sheetRow.setData("TimeCreated", "");
-			for(JCheckBox c : checkBoxes){
-				sheetRow.setData(c.getText(), c.isSelected()?"Y":"N");
-			}
-			sheetValues.add(sheetRow);
+			sheetValues.add(writeDataRow());
 		}
 		return sheetValues;
 	}
@@ -193,25 +185,38 @@ public class SellPanel extends SheetPanel {
 	@Override
 	public ArrayList<Row> addAdditionalRows(int rowCount) {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Row> sheetValues = new ArrayList<Row>();
+		for(int i=0;i<rowCount;i++){
+			sheetValues.add(writeDataRow());
+		}
+		return sheetValues;
+	}
+	
+	public Row writeDataRow(){
+		Row sheetRow = new Row();
+		sheetRow.setData("BuyerNumber", buyerNumber.getText());
+		sheetRow.setData("BuyerID", buyerId.getText().equals("")?"00":buyerId.getText());
+		sheetRow.setData("SalePrice", String.valueOf(this.getRandomNumberInRange(salePriceLow, salePriceHigh)));
+		sheetRow.setData("TimeCreated", "");
+		for(JCheckBox c : checkBoxes){
+			sheetRow.setData(c.getText(), c.isSelected()?"Y":"N");
+		}
+		return sheetRow;
 	}
 
 	@Override
 	public String[] getHeaders() {
 		// TODO Auto-generated method stub
 		Row sheetRow = new Row();
-		sheetRow.setData("BuyerNumber", buyerNumber.getText());
-		sheetRow.setData("BuyerID", buyerId.getText());
-		sheetRow.setData("SalePrice", salePriceLow.getText());
+		sheetRow.setData("BuyerNumber", "");
+		sheetRow.setData("BuyerID", "");
+		sheetRow.setData("SalePrice", "");
 		sheetRow.setData("TimeCreated", "");
 		for(JCheckBox c : checkBoxes){
-			sheetRow.setData(c.getText(), c.isSelected()?"Y":"N");
+			sheetRow.setData(c.getText(), "");
 		}
 		return sheetRow.getHeaders();
 	}
 
-	public synchronized void notifyPanel(){
-		notifyAll();
-	}
 
 }
