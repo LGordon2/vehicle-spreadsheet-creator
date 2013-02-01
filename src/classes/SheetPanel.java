@@ -50,6 +50,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	}
 	public void writeSheet() throws RowsExceededException, WriteException {
 		// TODO Auto-generated method stub
+		initializeValues();
 		ArrayList<Row> sheetValues = getSheetValues();
 
 		writeHeaders(sheetValues.size()>0?sheetValues.get(0).getHeaders():getHeaders());
@@ -59,6 +60,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 			writeDependentSheets();
 	}
 	private void writeSheetValues(ArrayList<Row> sheetValues, int rowOffset) throws RowsExceededException, WriteException{
+		
 		if(sheetValues==null)
 			sheetValues = getSheetValues();
 		//Write the data.
@@ -72,6 +74,9 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	}
 
 	protected abstract ArrayList<Row> getSheetValues();
+	public void initializeValues(){
+		//Please override me!
+	}
 
 	public void addDependentSheet(SheetPanel panel) {
 		// TODO Auto-generated method stub
@@ -126,5 +131,8 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 				field.setVisible(false);
 			}
 		}
+	}
+	public synchronized void notifyPanel(){
+		notifyAll();
 	}
 }

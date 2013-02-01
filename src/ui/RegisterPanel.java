@@ -4,7 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -27,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import classes.Constants;
+import classes.MaxLengthKeyListener;
 import classes.Row;
 import classes.SheetPanel;
 import database.DatabaseConnection;
@@ -47,22 +47,24 @@ public class RegisterPanel extends SheetPanel {
 	private JTextField interiorColor;
 	private JTextField bodyColor;
 	private JLabel lblBodyColor;
-	private JComboBox<String> titleComboBox;
+	private JTextField title;
 	private JLabel lblTitle;
 	private JLabel lblRegisterType;
 	private JComboBox<String> registerType;
 	private Set<String> entryNumbers;
+	private JLabel lblBUField;
+	private JTextField buField;
 
 	/**
 	 * Create the panel.
 	 */
 	public RegisterPanel() {
-		this.entryNumbers = Collections.synchronizedSet(new LinkedHashSet<String>());
+
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 20, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
@@ -88,18 +90,21 @@ public class RegisterPanel extends SheetPanel {
 		lblInteriorColor = new JLabel("Interior Color");
 
 		GridBagConstraints gbc_lblInteriorColor = new GridBagConstraints();
+		gbc_lblInteriorColor.gridwidth = 2;
 		gbc_lblInteriorColor.anchor = GridBagConstraints.EAST;
 		gbc_lblInteriorColor.insets = new Insets(0, 0, 5, 5);
 		gbc_lblInteriorColor.gridx = 3;
 		gbc_lblInteriorColor.gridy = 0;
 		add(lblInteriorColor, gbc_lblInteriorColor);
 
+		this.addAdditionalField(lblInteriorColor);
+
 		interiorColor = new JTextField();
 
 		GridBagConstraints gbc_interiorColor = new GridBagConstraints();
 		gbc_interiorColor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_interiorColor.insets = new Insets(0, 0, 5, 5);
-		gbc_interiorColor.gridx = 4;
+		gbc_interiorColor.gridx = 5;
 		gbc_interiorColor.gridy = 0;
 		add(interiorColor, gbc_interiorColor);
 		interiorColor.setColumns(10);
@@ -127,18 +132,20 @@ public class RegisterPanel extends SheetPanel {
 		lblBodyColor = new JLabel("Body Color");
 
 		GridBagConstraints gbc_lblBodyColor = new GridBagConstraints();
+		gbc_lblBodyColor.gridwidth = 2;
 		gbc_lblBodyColor.insets = new Insets(0, 0, 5, 5);
 		gbc_lblBodyColor.anchor = GridBagConstraints.EAST;
 		gbc_lblBodyColor.gridx = 3;
 		gbc_lblBodyColor.gridy = 1;
 		add(lblBodyColor, gbc_lblBodyColor);
+		this.addAdditionalField(lblBodyColor);
 
 		bodyColor = new JTextField();
 
 		GridBagConstraints gbc_bodyColor = new GridBagConstraints();
 		gbc_bodyColor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_bodyColor.insets = new Insets(0, 0, 5, 5);
-		gbc_bodyColor.gridx = 4;
+		gbc_bodyColor.gridx = 5;
 		gbc_bodyColor.gridy = 1;
 		add(bodyColor, gbc_bodyColor);
 		bodyColor.setColumns(10);
@@ -168,21 +175,23 @@ public class RegisterPanel extends SheetPanel {
 		lblTitle = new JLabel("Title");
 
 		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
+		gbc_lblTitle.gridwidth = 2;
 		gbc_lblTitle.insets = new Insets(0, 0, 5, 5);
 		gbc_lblTitle.anchor = GridBagConstraints.EAST;
 		gbc_lblTitle.gridx = 3;
 		gbc_lblTitle.gridy = 2;
 		add(lblTitle, gbc_lblTitle);
+		this.addAdditionalField(lblTitle);
 
-		titleComboBox = new JComboBox<String>();
-
-		titleComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"X"}));
+		title = new JTextField(1);
+		title.setText("X");
+		title.addKeyListener(new MaxLengthKeyListener(title.getColumns()));
 		GridBagConstraints gbc_titleComboBox = new GridBagConstraints();
 		gbc_titleComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_titleComboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_titleComboBox.gridx = 4;
+		gbc_titleComboBox.gridx = 5;
 		gbc_titleComboBox.gridy = 2;
-		add(titleComboBox, gbc_titleComboBox);
+		add(title, gbc_titleComboBox);
 
 
 		JLabel lblSellerNumber = new JLabel("Seller Number");
@@ -210,18 +219,20 @@ public class RegisterPanel extends SheetPanel {
 
 		lblRegisterType = new JLabel("Register Type");
 		GridBagConstraints gbc_lblRegisterType = new GridBagConstraints();
+		gbc_lblRegisterType.gridwidth = 2;
 		gbc_lblRegisterType.anchor = GridBagConstraints.EAST;
 		gbc_lblRegisterType.insets = new Insets(0, 0, 5, 5);
 		gbc_lblRegisterType.gridx = 3;
 		gbc_lblRegisterType.gridy = 3;
 		add(lblRegisterType, gbc_lblRegisterType);
+		this.addAdditionalField(lblRegisterType);
 
 		registerType = new JComboBox<String>();
 		registerType.setModel(new DefaultComboBoxModel<String>(new String[] {"REGIST", "RECON1", "AT_AUCTION"}));
 		GridBagConstraints gbc_registerType = new GridBagConstraints();
 		gbc_registerType.insets = new Insets(0, 0, 5, 5);
 		gbc_registerType.fill = GridBagConstraints.HORIZONTAL;
-		gbc_registerType.gridx = 4;
+		gbc_registerType.gridx = 5;
 		gbc_registerType.gridy = 3;
 		add(registerType, gbc_registerType);
 
@@ -259,24 +270,40 @@ public class RegisterPanel extends SheetPanel {
 		gbc_milesRangeHigh.gridy = 4;
 		add(milesRangeHigh, gbc_milesRangeHigh);
 		milesRangeHigh.setColumns(10);
+		this.addAdditionalField(interiorColor);
+		this.addAdditionalField(bodyColor);
+		this.addAdditionalField(title);
+		this.addAdditionalField(registerType);
 
 		chckbxNewCheckBox = new JCheckBox("Set additional fields");
 		chckbxNewCheckBox.addActionListener(this);
+
+		lblBUField = new JLabel("BU");
+		this.addAdditionalField(lblBUField);
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 4;
+		gbc_lblNewLabel.gridy = 4;
+		add(lblBUField, gbc_lblNewLabel);
+
+		buField = new JTextField(1);
+		this.addAdditionalField(buField);
+		buField.setText("I");
+		buField.addKeyListener(new MaxLengthKeyListener(buField.getColumns()));
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.anchor = GridBagConstraints.WEST;
+		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.gridx = 5;
+		gbc_textField.gridy = 4;
+		add(buField, gbc_textField);
+
 		GridBagConstraints gbc_chckbxNewCheckBox = new GridBagConstraints();
 		gbc_chckbxNewCheckBox.anchor = GridBagConstraints.NORTH;
-		gbc_chckbxNewCheckBox.insets = new Insets(0, 0, 5, 5);
+		gbc_chckbxNewCheckBox.insets = new Insets(0, 0, 0, 5);
 		gbc_chckbxNewCheckBox.gridx = 0;
-		gbc_chckbxNewCheckBox.gridy = 5;
+		gbc_chckbxNewCheckBox.gridy = 9;
 		add(chckbxNewCheckBox, gbc_chckbxNewCheckBox);
-
-		this.addAdditionalField(lblInteriorColor);
-		this.addAdditionalField(interiorColor);
-		this.addAdditionalField(lblBodyColor);
-		this.addAdditionalField(bodyColor);
-		this.addAdditionalField(lblTitle);
-		this.addAdditionalField(titleComboBox);
-		this.addAdditionalField(lblRegisterType);
-		this.addAdditionalField(registerType);
 		initializeAdditionalFields();
 	}
 
@@ -307,24 +334,18 @@ public class RegisterPanel extends SheetPanel {
 			try {
 				if(RegisterPanel.this.entryNumbers.contains(String.format("%1$02d%2$04d", laneNumber, runNumber)))
 					return;
-				Connection conn = null;
-				Properties connectionProps = new Properties();
-				connectionProps.put("user", "lgordon");
-				connectionProps.put("password", "orasi101");
-
-				conn = DriverManager.getConnection(DatabaseConnection.getInstance().url, connectionProps);
-				Statement stmt = conn.createStatement();
+				Connection conn = DatabaseConnection.getInstance().getConnection();
+				PreparedStatement stmt = conn.prepareStatement("select count(*) from macsf.pfvehicle where ssleyr="+saleYear+" and ssale#="+saleNumber+" and slane#="+laneNumber+" and srun#="+runNumber);
 				ResultSet rs;
-				rs = stmt.executeQuery("select count(*) from macsf.pfvehicle where srun#="+runNumber+" and slane#="+laneNumber+" and ssleyr="+saleYear+" and ssale#="+saleNumber);
+				rs = stmt.executeQuery();
 				rs.next();
 				if(rs.getInt(1)==0){
 					RegisterPanel.this.entryNumbers.add(String.format("%1$02d%2$04d", laneNumber, runNumber));
-					System.out.println("Entry numbers size: "+RegisterPanel.this.entryNumbers.size());
 				}
 				notifyPanel();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				//System.err.println("DB connection issue.");
+				e.printStackTrace();
 			}
 
 		}
@@ -333,90 +354,57 @@ public class RegisterPanel extends SheetPanel {
 
 	@Override
 	protected ArrayList<Row> getSheetValues() {
-		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		//if(entryNumbers.size()<1)
 		this.entryNumbers = getNextUnregisteredVehicles(vehicleCount.getNumber(),this.entryNumbers);
-		System.out.println("****Entry numbers size: "+this.entryNumbers.size());
 		Iterator<String> itr = this.entryNumbers.iterator();
 
 		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
-			Row sheetRow = new Row();
-			sheetRow.setData("EntryNumber", itr.next());
-			sheetRow.setData("SaleNumber", saleNumber.getText());
-			sheetRow.setData("SaleYear", saleYear.getText());
-			sheetRow.setData("VIN", "");
-			sheetRow.setData("RegisterType", "REGIST");
-			sheetRow.setData("SBLU", "");
-			sheetRow.setData("WorkOrderNumber", "");
-			sheetRow.setData("SellerNumber", sellerNumber.getText());
-			sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
-			sheetRow.setData("BU", "I");
-			sheetRow.setData("Transmission", "A");
-			sheetRow.setData("Title", "X");
-			sheetRow.setData("InteriorColor", "GRN");
-			sheetRow.setData("Color", "BLUE");
-			sheetRow.setData("Offsite", "N");
-			sheetRow.setData("LocationName", "");
-			sheetRow.setData("Address1", "");
-			sheetRow.setData("Address2", "");
-			sheetRow.setData("City", "");
-			sheetRow.setData("State", "");
-			sheetRow.setData("Country", "");
-			sheetRow.setData("ZipCode", "");
-			sheetRow.setData("ContactName", "");
-			sheetRow.setData("Phone", "");
-			sheetRow.setData("Fax", "");
-			sheetRow.setData("VerifyDatabase", "");
-			sheetRow.setData("UploadToGoogle", "N");
-			sheetValues.add(sheetRow);
+			sheetValues.add(writeDataRow(itr.next()));
 		}
 
 		return sheetValues;
 	}
+	
+	public Row writeDataRow(String entryNumber){
+		Row sheetRow = new Row();
+		sheetRow.setData("EntryNumber", entryNumber);
+		sheetRow.setData("SaleNumber", saleNumber.getText());
+		sheetRow.setData("SaleYear", saleYear.getText());
+		sheetRow.setData("RegisterType", "REGIST");
+		sheetRow.setData("SellerNumber", sellerNumber.getText());
+		sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
+		sheetRow.setData("BU", buField.getText());
+		sheetRow.setData("Transmission", "A");
+		sheetRow.setData("Title", (String) title.getText());
+		sheetRow.setData("InteriorColor", interiorColor.getText());
+		sheetRow.setData("Color", bodyColor.getText());
+		sheetRow.setData("Offsite", "N");
+		sheetRow.setData("UploadToGoogle", "N");
+		
+		//Write the blank rows.
+		for(String header : getHeaders()){
+			if(!sheetRow.containsHeader(header))
+				sheetRow.setData(header, "");
+		}
+		return sheetRow;
+	}
 
+	public void initializeValues(){
+		this.entryNumbers = Collections.synchronizedSet(new LinkedHashSet<String>());
+	}
 
 	@Override
 	protected ArrayList<Row> addAdditionalRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		this.entryNumbers = getNextUnregisteredVehicles(rowCount+vehicleCount.getNumber(),this.entryNumbers);
-		System.out.println("****Entry numbers size: "+this.entryNumbers.size());
 		Iterator<String> itr = this.entryNumbers.iterator();
 		for(int i=0;i<this.entryNumbers.size()-rowCount;i++){
 			itr.next();
 		}
 
 		for(int i=0;i<rowCount;i++){
-			Row sheetRow = new Row();
-			sheetRow.setData("EntryNumber", itr.next());
-			sheetRow.setData("SaleNumber", saleNumber.getText());
-			sheetRow.setData("SaleYear", saleYear.getText());
-			sheetRow.setData("VIN", "");
-			sheetRow.setData("RegisterType", "REGIST");
-			sheetRow.setData("SBLU", "");
-			sheetRow.setData("WorkOrderNumber", "");
-			sheetRow.setData("SellerNumber", sellerNumber.getText());
-			sheetRow.setData("Miles", String.valueOf(this.getRandomNumberInRange(milesRangeLow, milesRangeHigh)));
-			sheetRow.setData("BU", "I");
-			sheetRow.setData("Transmission", "A");
-			sheetRow.setData("Title", "X");
-			sheetRow.setData("InteriorColor", "GRN");
-			sheetRow.setData("Color", "BLUE");
-			sheetRow.setData("Offsite", "N");
-			sheetRow.setData("LocationName", "");
-			sheetRow.setData("Address1", "");
-			sheetRow.setData("Address2", "");
-			sheetRow.setData("City", "");
-			sheetRow.setData("State", "");
-			sheetRow.setData("Country", "");
-			sheetRow.setData("ZipCode", "");
-			sheetRow.setData("ContactName", "");
-			sheetRow.setData("Phone", "");
-			sheetRow.setData("Fax", "");
-			sheetRow.setData("VerifyDatabase", "");
-			sheetRow.setData("UploadToGoogle", "N");
-			sheetValues.add(sheetRow);
+			sheetValues.add(writeDataRow(itr.next()));
 		}
 
 		return sheetValues;
@@ -424,11 +412,15 @@ public class RegisterPanel extends SheetPanel {
 
 	@Override
 	public String[] getHeaders() {
-		// TODO Auto-generated method stub
-		return new String[]{"EntryNumber", "SaleYear", "RegisterType", "SBLU", "WorkOrderNumber", "VIN", "SaleNumber",
-				"SellerNumber", "Miles", "BU", "Transmission", "Title", "InteriorColor", "Color", "Offsite",
-				"LocationName", "Address1", "Address2", "City", "State", "Country", "ZipCode", "ContactName",
-				"Phone", "Fax", "VerifyDatabase", "UploadToGoogle"};
+		String[] headers = {"EntryNumber","SaleNumber","SaleYear","VIN","SellerNumber",
+				"RegisterType","SBLU","WorkOrderNumber","BU","Transmission","Title","InteriorColor",
+				"Color","Miles","Offsite","LocationName","Address1","Address2","City","State",
+				"Country","ZipCode","ContactName","Phone","Fax","VerifyDatabase","UploadToGoogle"};
+		Row sheetRow = new Row();
+		for(String header : headers){
+			sheetRow.setData(header, "");
+		}
+		return sheetRow.getHeaders();
 	}
 
 	private synchronized Set<String> findUnregisteredVehiclesEntryNumbers(Connection conn, int saleNumber, int saleYear, int requestedCount, Set<String> entryNumbers){
@@ -459,9 +451,7 @@ public class RegisterPanel extends SheetPanel {
 		return this.entryNumbers;
 	}
 
-	public synchronized void notifyPanel(){
-		notifyAll();
-	}
+
 
 
 	private Set<String> getNextUnregisteredVehicles(int requestedCount, Set<String> entryNumbers){

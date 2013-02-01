@@ -14,6 +14,9 @@ public class Row {
 		this.rowNumber = 0;
 		this.rowData = new TreeMap<String, String>();
 	}
+	public boolean containsHeader(String header){
+		return this.rowData.containsKey(header);
+	}
 
 	public Row(int rowNumber, TreeMap<String, String> rowData){
 		this.rowNumber = rowNumber;

@@ -210,4 +210,8 @@ public class SellPanel extends SheetPanel {
 		return sheetRow.getHeaders();
 	}
 
+	public synchronized void notifyPanel(){
+		notifyAll();
+	}
+
 }

@@ -15,10 +15,14 @@ public class DatabaseConnection {
     private Connection connection;
     public String url;
     private ArrayList<OnStateChangedListener> onStateChangedListeners;
+	public Properties connectionProps;
 
 	// Private constructor prevents instantiation from other classes
     private DatabaseConnection() { 
     	onStateChangedListeners = new ArrayList<OnStateChangedListener>();
+		Properties connectionProps = new Properties();
+		connectionProps.put("user", Constants.DEFAULT_USERNAME);
+		connectionProps.put("password", Constants.DEFAULT_PASSWORD);
     	connectTo(Constants.DEFAULT_DB_URL);
     }
     
@@ -43,7 +47,7 @@ public class DatabaseConnection {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					DatabaseConnection.this.connection = setUpConnection(url);
+					setUpConnection(url);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					DatabaseConnection.this.connectionState = Constants.DB_CONNECTION_ERROR;
@@ -53,20 +57,15 @@ public class DatabaseConnection {
     		
     	}).start();
     }
-	private Connection setUpConnection(String url) throws SQLException {
+	private void setUpConnection(String url) throws SQLException {
 		connectionState = Constants.DB_CONNECTING;
 		stateChanged();
-		Connection conn = null;
-		Properties connectionProps = new Properties();
-		connectionProps.put("user", "lgordon");
-		connectionProps.put("password", "orasi101");
 		DriverManager.registerDriver(new AS400JDBCDriver());
-		conn = DriverManager.getConnection(url, connectionProps);
-		System.out.println("Connected to database");
+		this.connection = DriverManager.getConnection(url, this.connectionProps);
+		System.out.println("Connected to database ["+url+"]");
 		connectionState = Constants.DB_CONNECTED;
 		stateChanged();
 		this.url = url;
-		return conn;
 	}
 	
 	public Connection getConnection(){
