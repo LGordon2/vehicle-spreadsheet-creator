@@ -352,19 +352,6 @@ public class RegisterPanel extends SheetPanel {
 
 	}
 
-	@Override
-	protected ArrayList<Row> getSheetValues() {
-		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		this.entryNumbers = getNextUnregisteredVehicles(vehicleCount.getNumber(),this.entryNumbers);
-		Iterator<String> itr = this.entryNumbers.iterator();
-
-		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
-			sheetValues.add(writeDataRow(itr.next()));
-		}
-
-		return sheetValues;
-	}
-	
 	public Row writeDataRow(String entryNumber){
 		Row sheetRow = new Row();
 		sheetRow.setData("EntryNumber", entryNumber);
@@ -394,7 +381,7 @@ public class RegisterPanel extends SheetPanel {
 	}
 
 	@Override
-	protected ArrayList<Row> addAdditionalRows(int rowCount) {
+	protected ArrayList<Row> getDataRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		this.entryNumbers = getNextUnregisteredVehicles(rowCount+this.entryNumbers.size(),this.entryNumbers);

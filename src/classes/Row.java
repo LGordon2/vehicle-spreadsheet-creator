@@ -1,10 +1,11 @@
 package classes;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 public class Row {
 	int rowNumber;
-	TreeMap<String, String> rowData;
+	Map<String, String> rowData;
 
 	public Row(Row row){
 		this.rowNumber = row.rowNumber;
@@ -39,5 +40,9 @@ public class Row {
 	}
 	public String[] getData(){
 		return rowData.values().toArray(new String[rowData.size()]);
+	}
+	public boolean equals(Object anotherRow){
+		return this.rowData.equals(((Row) anotherRow).rowData);
+		
 	}
 }

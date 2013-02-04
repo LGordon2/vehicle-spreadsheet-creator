@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 	private RegisterPanel registerPanel;
 	private SellPanel sellPanel;
 	private PsiPanel psiPanel;
+	private ArbitrationPanel arbitrationPanel;
 	private static JProgressBar entryNumbersProgressBar = new JProgressBar();
 	private static JProgressBar progressBar = new JProgressBar();
 	/**
@@ -157,6 +159,9 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 		
 		psiPanel = new PsiPanel();
 		((SheetPanel) psiPanel).addDependentSheet((SheetPanel) sellPanel);
+		
+		arbitrationPanel = new ArbitrationPanel();
+		((SheetPanel) arbitrationPanel).addDependentSheet((SheetPanel) sellPanel);
 
 	}
 
@@ -164,7 +169,14 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 		Map<String, String> env = System.getenv();
 		File folder = new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation");
 		folder.mkdir();
-		WritableWorkbook workbook = Workbook.createWorkbook(new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation"+File.separator+"MasterDriver.xls"));
+		WritableWorkbook workbook = null;
+		try{
+			workbook = Workbook.createWorkbook(new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation"+File.separator+"MasterDriver.xls"));
+		}catch(FileNotFoundException e){
+			MainApp.setProgress(0, "Please close the excel file that is open.");
+			e.printStackTrace();
+			return;
+		}
 		MainApp.setProgress(10, "Connecting to DB.");
 		while(!DatabaseConnection.getInstance().isConnected()){
 			try{
@@ -197,6 +209,8 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 			tabPanel = sellPanel;
 		else if(((JCheckBox) e.getSource()).getText().equals("PSI"))
 			tabPanel = psiPanel;
+		else if(((JCheckBox) e.getSource()).getText().equals("Arbitration"))
+			tabPanel = arbitrationPanel;
 
 		if(((AbstractButton) e.getSource()).isSelected()){
 			sheetPanels.add(tabPanel);
@@ -214,7 +228,6 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 		}
 		else
 			bar = progressBar;
-		
 		bar.setValue(value);
 		if(message!=null){
 			bar.setString(message);

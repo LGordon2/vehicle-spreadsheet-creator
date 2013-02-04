@@ -218,8 +218,8 @@ public class RunPanel extends SheetPanel{
 		
 		//Then for sell.
 		chckbxSell.addItemListener((ItemListener) chckbxPsi);
-		/*chckbxSell.addItemListener((ItemListener) chckbxPayment);
 		chckbxSell.addItemListener((ItemListener) chckbxArbitration);
+		/*chckbxSell.addItemListener((ItemListener) chckbxPayment);
 		chckbxSell.addItemListener((ItemListener) chckbxMyPurchases);*/
 		
 		//Set up machine info.
@@ -242,25 +242,6 @@ public class RunPanel extends SheetPanel{
 		return "Run";
 	}
 
-	@Override
-	protected ArrayList<Row> getSheetValues() {
-		// TODO Auto-generated method stub
-		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		
-		//UserName
-		Row r = new Row();
-		r.setData("UserName", usernameField.getText());
-		r.setData("Password", String.valueOf(passwordField.getPassword()));
-		r.setData("Machine", (String) machineDropDown.getSelectedItem() + (String) siloDropDown.getSelectedItem());
-		for(JCheckBox c : checkBoxes){
-			r.setData(c.getText(), c.isSelected()?"Y":"N");
-		}
-		sheetValues.add(r);
-		
-		return sheetValues;
-	}
-
-
 	public boolean isEnabledSheetPanel(String description) {
 		// TODO Auto-generated method stub
 		for(JCheckBox checkBox : checkBoxes){
@@ -274,7 +255,7 @@ public class RunPanel extends SheetPanel{
 
 
 	@Override
-	public ArrayList<Row> addAdditionalRows(int rowCount) {
+	public ArrayList<Row> getDataRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		

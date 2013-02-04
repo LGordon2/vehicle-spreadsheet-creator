@@ -173,17 +173,7 @@ public class SellPanel extends SheetPanel {
 	}
 
 	@Override
-	protected ArrayList<Row> getSheetValues() {
-		// TODO Auto-generated method stub
-		ArrayList<Row> sheetValues = new ArrayList<Row>();
-		for(int i=0;i<Integer.valueOf(vehicleCount.getText());i++){
-			sheetValues.add(writeDataRow());
-		}
-		return sheetValues;
-	}
-
-	@Override
-	public ArrayList<Row> addAdditionalRows(int rowCount) {
+	public ArrayList<Row> getDataRows(int rowCount) {
 		// TODO Auto-generated method stub
 		ArrayList<Row> sheetValues = new ArrayList<Row>();
 		for(int i=0;i<rowCount;i++){
