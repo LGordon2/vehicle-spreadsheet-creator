@@ -276,7 +276,19 @@ public class RunPanel extends SheetPanel{
 	@Override
 	public ArrayList<Row> addAdditionalRows(int rowCount) {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Row> sheetValues = new ArrayList<Row>();
+		
+		//UserName
+		Row r = new Row();
+		r.setData("UserName", usernameField.getText());
+		r.setData("Password", String.valueOf(passwordField.getPassword()));
+		r.setData("Machine", (String) machineDropDown.getSelectedItem() + (String) siloDropDown.getSelectedItem());
+		for(JCheckBox c : checkBoxes){
+			r.setData(c.getText(), c.isSelected()?"Y":"N");
+		}
+		sheetValues.add(r);
+		
+		return sheetValues;
 	}
 
 

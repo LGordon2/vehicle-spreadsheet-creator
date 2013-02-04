@@ -34,13 +34,6 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		dependentSheets = new ArrayList<SheetPanel>();
 	}
 
-	private ArrayList<Row> writeAdditionalRows(int rowCount) throws RowsExceededException, WriteException{
-		ArrayList<Row> additionalRows = addAdditionalRows(rowCount);
-		writeSheetValues(additionalRows, dataRows);
-		dataRows += rowCount;
-		return additionalRows;
-	}
-
 	public void createSheet(WritableWorkbook workbook, int sheetNumber){
 		runSheet = workbook.createSheet(this.getDescription(),sheetNumber);
 	}
@@ -51,14 +44,24 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		}
 	}
 	public void writeSheet() throws RowsExceededException, WriteException {
-		// TODO Auto-generated method stub
+		// Initialize values in the sheet.
+		this.dataRows=0;
 		initializeValues();
-		ArrayList<Row> sheetValues = getSheetValues();
-		this.dataRows = 0;  
 
-		writeDependentSheets(sheetValues.size());
+		//Get the sheet data.
+		ArrayList<Row> sheetValues = getSheetValues();
+		
+		
+		if(dependentSheets.size()>0){
+			writeDependentSheets(sheetValues.size());
+		}else{
+			//Write the sheet headers and data.
+			writeHeaders(sheetValues.get(0).getHeaders());
+			writeSheetValues(sheetValues);
+		}
+
 	}
-	
+
 	/**
 	 * Writes values to the current sheet.
 	 * @param sheetValues - Values to be written.
@@ -66,7 +69,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	 * @throws RowsExceededException
 	 * @throws WriteException
 	 */
-	private void writeSheetValues(ArrayList<Row> sheetValues, int rowOffset) throws RowsExceededException, WriteException{
+	private void writeSheetValues(ArrayList<Row> sheetValues) throws RowsExceededException, WriteException{
 
 		if(sheetValues==null)
 			sheetValues = getSheetValues();
@@ -75,9 +78,10 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 			//Write row data.
 			Object[] rowData = sheetValues.get(i).getData();
 			for(int j=0;j<rowData.length;j++){
-				runSheet.addCell(new Label(j,i+1+rowOffset,(String) rowData[j]));
+				runSheet.addCell(new Label(j,i+1+this.dataRows,(String) rowData[j]));
 			}
 		}
+		this.dataRows += sheetValues.size();
 	}
 
 	protected abstract ArrayList<Row> getSheetValues();
@@ -91,51 +95,25 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	}
 
 	private ArrayList<Row> writeDependentSheets(int additionalRows) throws RowsExceededException, WriteException {
-		//Initialize and get our data.
-		ArrayList<Row> mSheetData = getSheetRows(additionalRows);
-		ArrayList<Row> additionalData;
-		
-		//If no dependent sheets write and return the rows.
+		//Get additional data.
 		if(dependentSheets.size()==0){
-			//Write
-			additionalData = this.getSheetRows(additionalRows);
-			writeHeaders(additionalData.get(0).getHeaders());
-			writeSheetValues(mSheetData,getSheetValues().size()+1);
-			//Return
+			ArrayList<Row> additionalData = getAdditionalRows(additionalRows);
+			this.writeSheetValues(additionalData);
 			return additionalData;
 		}
-		
-		//Request data from dependent sheets.
-		additionalData = dependentSheets.get(0).writeDependentSheets(additionalRows);
-		//Merge additional data from dependentSheets.
-		assert mSheetData.size() == additionalData.size();
-		for(int i=0;i<additionalData.size();i++){
-			mSheetData.get(i).putAll(additionalData.get(i));
-		}
-		
-		//Write it to the data sheet.
-		writeHeaders(mSheetData.get(0).getHeaders());
-		writeSheetValues(mSheetData,dataRows);
-		dataRows += additionalData.size();
-		return mSheetData;
-		/*
+		//Add specified rows.
+		ArrayList<Row> sheetValues = getAdditionalRows(additionalRows);
+
+		//Recursive call to get additional data.
 		for(SheetPanel s : dependentSheets){
-			for(SheetPanel panel : s.dependentSheets){
-				panel.writeAdditionalRows(additionalRows);
-			}
-			additionalData = s.writeAdditionalRows(mSheetData.size());
-			for(int i=0;i<mSheetData.size();i++){
-				mSheetData.get(i).putAll(additionalData.get(i));
+			ArrayList<Row> additionalData = s.writeDependentSheets(additionalRows);
+			for(int i=0;i<additionalData.size();i++){
+				sheetValues.get(i).putAll(additionalData.get(i));
 			}
 		}
-
-		writeHeaders(mSheetData.get(0).getHeaders());
-		writeSheetValues(mSheetData,0);*/
-	}
-
-	private ArrayList<Row> getSheetRows(int additionalRows) {
-		// TODO Auto-generated method stub
-		return addAdditionalRows(additionalRows);
+		writeHeaders(sheetValues.get(0).getHeaders());
+		writeSheetValues(sheetValues);
+		return sheetValues;
 	}
 
 	public abstract String[] getHeaders();
@@ -175,7 +153,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	public synchronized void notifyPanel(){
 		notifyAll();
 	}
-	
+
 	private ArrayList<Row> getAdditionalRows(int numberRows){
 		return addAdditionalRows(numberRows);
 	}
