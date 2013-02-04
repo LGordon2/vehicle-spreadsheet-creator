@@ -187,4 +187,10 @@ public class PsiPanel extends SheetPanel {
 		return sheetRow.getHeaders();
 	}
 
+	@Override
+	public int getRequestedRowCount() {
+		// TODO Auto-generated method stub
+		return this.listModel.size();
+	}
+
 }

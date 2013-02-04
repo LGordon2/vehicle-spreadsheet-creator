@@ -471,4 +471,10 @@ public class RegisterPanel extends SheetPanel {
 		return null;
 
 	}
+
+	@Override
+	public int getRequestedRowCount() {
+		// TODO Auto-generated method stub
+		return this.vehicleCount.getNumber();
+	}
 }

@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import ui.MainApp;
+
 import classes.Constants;
 
 import com.ibm.as400.access.AS400JDBCDriver;
@@ -51,6 +53,7 @@ public class DatabaseConnection {
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					DatabaseConnection.this.connectionState = Constants.DB_CONNECTION_ERROR;
+					MainApp.setProgress(0, "Couldn't connect to database.");
 					e.printStackTrace();
 				}
 			}

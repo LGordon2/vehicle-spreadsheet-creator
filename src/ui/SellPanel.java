@@ -218,5 +218,11 @@ public class SellPanel extends SheetPanel {
 		return sheetRow.getHeaders();
 	}
 
+	@Override
+	public int getRequestedRowCount() {
+		// TODO Auto-generated method stub
+		return this.vehicleCount.getNumber();
+	}
+
 
 }

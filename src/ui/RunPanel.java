@@ -314,4 +314,11 @@ public class RunPanel extends SheetPanel{
 	}
 
 
+	@Override
+	public int getRequestedRowCount() {
+		// TODO Auto-generated method stub
+		return 1;
+	}
+
+
 }

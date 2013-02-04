@@ -49,18 +49,19 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		initializeValues();
 
 		//Get the sheet data.
-		ArrayList<Row> sheetValues = getSheetValues();
-		
-		
-		if(dependentSheets.size()>0){
-			writeDependentSheets(sheetValues.size());
-		}else{
+		//ArrayList<Row> sheetValues = getSheetValues();
+
+
+		//if(dependentSheets.size()>0){
+		writeDependentSheets(getRequestedRowCount());
+		/*}else{
 			//Write the sheet headers and data.
 			writeHeaders(sheetValues.get(0).getHeaders());
 			writeSheetValues(sheetValues);
-		}
-
+		}*/
 	}
+
+	public abstract int getRequestedRowCount();
 
 	/**
 	 * Writes values to the current sheet.
@@ -98,6 +99,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 		//Get additional data.
 		if(dependentSheets.size()==0){
 			ArrayList<Row> additionalData = getAdditionalRows(additionalRows);
+			writeHeaders(getHeaders());
 			this.writeSheetValues(additionalData);
 			return additionalData;
 		}
@@ -111,7 +113,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 				sheetValues.get(i).putAll(additionalData.get(i));
 			}
 		}
-		writeHeaders(sheetValues.get(0).getHeaders());
+		writeHeaders(sheetValues.size()==0?getHeaders():sheetValues.get(0).getHeaders());
 		writeSheetValues(sheetValues);
 		return sheetValues;
 	}
