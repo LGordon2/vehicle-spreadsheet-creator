@@ -16,7 +16,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import ui.NumberTextField;
+import ui.MainApp;
 
 public abstract class SheetPanel extends JPanel implements ActionListener{
 	/**
@@ -26,6 +26,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	private WritableSheet runSheet;
 	private ArrayList<SheetPanel> dependentSheets;
 	private ArrayList<JComponent> additionalFields;
+	private ArrayList<JComponent> verifyFields;
 	private int dataRows;
 	
 	protected abstract ArrayList<Row> getDataRows(int rowCount);
@@ -33,6 +34,7 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	public SheetPanel(){
 		additionalFields = new ArrayList<JComponent>();
 		dependentSheets = new ArrayList<SheetPanel>();
+		verifyFields = new ArrayList<JComponent>();
 	}
 
 	public void createSheet(WritableWorkbook workbook, int sheetNumber){
@@ -110,8 +112,13 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 
 	public abstract String[] getHeaders();
 
-	public int getRandomNumberInRange(NumberTextField numberFieldLow, NumberTextField numberFieldHigh) {
-		// TODO Auto-generated method stub
+	public int getRandomNumberInRange(NumberTextField numberFieldLow, NumberTextField numberFieldHigh){
+		if(numberFieldHigh.getNumber()<numberFieldLow.getNumber()){
+			setErrorDescription(String.format(Constants.ERROR_RNG_ISSUE,this.getDescription(),numberFieldLow.getName(),numberFieldHigh.getName()));
+			return -1;
+		}else if(numberFieldHigh.getNumber()==numberFieldLow.getNumber()){
+			return numberFieldHigh.getNumber();
+		}
 		Random rng = new Random();
 		return rng.nextInt(numberFieldHigh.getNumber()-numberFieldLow.getNumber())+numberFieldLow.getNumber();
 	}
@@ -145,5 +152,25 @@ public abstract class SheetPanel extends JPanel implements ActionListener{
 	public synchronized void notifyPanel(){
 		notifyAll();
 	}
+	
+	public void setErrorDescription(String errorDescription, JComponent component){
+		MainApp.setProgress(0, String.format(errorDescription,this.getDescription(),component.getName()));
+	}
+	
+	public void setErrorDescription(String errorDescription){
+		MainApp.setProgress(0, errorDescription);
+	}
 
+	public final boolean errorFree() {
+		// TODO Auto-generated method stub
+		for(JComponent component : verifyFields){
+			if(!component.getInputVerifier().verify(component))
+				return false;
+		}
+		return true;
+	}
+	
+	protected void addVerifyInputField(JComponent component){
+		this.verifyFields.add(component);
+	}
 }

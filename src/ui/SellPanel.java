@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
+import classes.LessThanOrEqualVerifier;
+import classes.NumberTextField;
 import classes.Row;
 import classes.SheetPanel;
+import classes.TextFieldInputVerifier;
 
 public class SellPanel extends SheetPanel {
 	public SellPanel() {
@@ -31,6 +34,9 @@ public class SellPanel extends SheetPanel {
 		add(lblVehicleCount, gbc_lblVehicleCount);
 
 		vehicleCount = new NumberTextField();
+		vehicleCount.setName("Vehicle count");
+		vehicleCount.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(vehicleCount);
 		GridBagConstraints gbc_vehicleCount = new GridBagConstraints();
 		gbc_vehicleCount.fill = GridBagConstraints.HORIZONTAL;
 		gbc_vehicleCount.insets = new Insets(0, 0, 5, 5);
@@ -49,6 +55,7 @@ public class SellPanel extends SheetPanel {
 		add(lblBuyerNumber, gbc_lblBuyerNumber);
 
 		buyerNumber = new NumberTextField();
+		buyerNumber.setName("Buyer number");
 
 		GridBagConstraints gbc_buyerNumber = new GridBagConstraints();
 		gbc_buyerNumber.insets = new Insets(0, 0, 5, 5);
@@ -68,6 +75,7 @@ public class SellPanel extends SheetPanel {
 		add(lblBuyerId, gbc_lblBuyerId);
 
 		buyerId = new NumberTextField();
+		buyerId.setName("Buyer id");
 		buyerId.setText("00");
 
 		GridBagConstraints gbc_buyerId = new GridBagConstraints();
@@ -87,6 +95,11 @@ public class SellPanel extends SheetPanel {
 		add(lblSalePrice, gbc_lblSalePrice);
 
 		salePriceLow = new NumberTextField();
+		salePriceLow.setName("Sale price low");
+		salePriceHigh = new NumberTextField();
+		salePriceHigh.setName("Sale price high");
+		salePriceLow.setInputVerifier(new LessThanOrEqualVerifier(new TextFieldInputVerifier(this),salePriceHigh));
+		this.addVerifyInputField(salePriceLow);
 		GridBagConstraints gbc_salePriceLow = new GridBagConstraints();
 		gbc_salePriceLow.insets = new Insets(0, 0, 5, 5);
 		gbc_salePriceLow.fill = GridBagConstraints.HORIZONTAL;
@@ -102,7 +115,9 @@ public class SellPanel extends SheetPanel {
 		gbc_lblTo.gridy = 2;
 		add(lblTo, gbc_lblTo);
 
-		salePriceHigh = new NumberTextField();
+
+		salePriceHigh.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(salePriceHigh);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.insets = new Insets(0, 0, 5, 5);

@@ -137,14 +137,14 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 		gridBagLayout_1.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0};
 		gridBagLayout_1.columnWeights = new double[]{0.0, 1.0};
 		tabbedPane.addTab("Run", null, runPanel, null);
-		
+
 		GridBagConstraints gbc_entryNumbersProgressBar = new GridBagConstraints();
 		gbc_entryNumbersProgressBar.insets = new Insets(0, 0, 5, 0);
 		gbc_entryNumbersProgressBar.fill = GridBagConstraints.HORIZONTAL;
 		gbc_entryNumbersProgressBar.gridx = 0;
 		gbc_entryNumbersProgressBar.gridy = 1;
 		frmVehicleSpreadsheetCreator.getContentPane().add(entryNumbersProgressBar, gbc_entryNumbersProgressBar);
-		
+
 		entryNumbersProgressBar.setVisible(false);
 		GridBagConstraints gbc_progressBar = new GridBagConstraints();
 		gbc_progressBar.fill = GridBagConstraints.HORIZONTAL;
@@ -156,16 +156,24 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 
 		sellPanel = new SellPanel();
 		((SheetPanel) sellPanel).addDependentSheet((SheetPanel) registerPanel);
-		
+
 		psiPanel = new PsiPanel();
 		((SheetPanel) psiPanel).addDependentSheet((SheetPanel) sellPanel);
-		
+
 		arbitrationPanel = new ArbitrationPanel();
 		((SheetPanel) arbitrationPanel).addDependentSheet((SheetPanel) sellPanel);
 
 	}
 
 	protected synchronized void createNewExcel() throws BiffException, IOException, WriteException {
+		//Make sure there are no issues.
+		for(int i=0;i<sheetPanels.size();i++){
+			if(!sheetPanels.get(i).errorFree()){
+				//Report issue.
+				return;
+			}
+		}
+		
 		Map<String, String> env = System.getenv();
 		File folder = new File(env.get("USERPROFILE")+File.separator+"VehicleAutomation");
 		folder.mkdir();
@@ -186,7 +194,9 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 			}
 		}
 		MainApp.setProgress(20, "Connected to DB.");
-		
+
+
+
 		for(int i=0;i<sheetPanels.size();i++){
 			if(runPanel.isEnabledSheetPanel(sheetPanels.get(i).getDescription()) || 
 					sheetPanels.get(i).getDescription().equals(runPanel.getDescription())){
@@ -220,7 +230,7 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 			tabbedPane.remove(tabPanel);
 		}
 	}
-	
+
 	public static void setProgress(String tag, int value, String message){
 		JProgressBar bar = null;
 		if(tag.equals("EntryNumbers")){
@@ -235,7 +245,7 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 		}else
 			bar.setStringPainted(false);
 	}
-	
+
 	public static synchronized void setProgress(int value, String message){
 		MainApp.setProgress("", value, message);
 	}
@@ -247,7 +257,7 @@ public class MainApp implements ItemListener, OnStateChangedListener{
 		}
 		bar.setVisible(visible);
 	}
-	
+
 	@Override
 	public void onDBStateChange() {
 		// TODO Auto-generated method stub

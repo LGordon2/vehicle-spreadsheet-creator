@@ -3,6 +3,8 @@ package ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
@@ -17,10 +19,8 @@ import javax.swing.JTextField;
 import classes.JDependentCheckBox;
 import classes.Row;
 import classes.SheetPanel;
+import classes.TextFieldInputVerifier;
 import database.DatabaseConnection;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class RunPanel extends SheetPanel{
 	/**
@@ -35,6 +35,8 @@ public class RunPanel extends SheetPanel{
 	public static String machineInfo = "";
 	
 	private ActionListener machineUpdater;
+	private JLabel lblPassword;
+	private JLabel lblUsername;
 	
 	/**
 	 * Create the panel.
@@ -49,7 +51,7 @@ public class RunPanel extends SheetPanel{
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0};
 		setLayout(gridBagLayout);
 		
-		JLabel lblUsername = new JLabel("Username");
+		lblUsername = new JLabel("Username");
 		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
 		gbc_lblUsername.insets = new Insets(0, 0, 5, 5);
 		gbc_lblUsername.anchor = GridBagConstraints.EAST;
@@ -58,6 +60,9 @@ public class RunPanel extends SheetPanel{
 		add(lblUsername, gbc_lblUsername);
 		
 		usernameField = new JTextField();
+		usernameField.setName("Username");
+		usernameField.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(usernameField);
 		lblUsername.setLabelFor(usernameField);
 		GridBagConstraints gbc_usernameField = new GridBagConstraints();
 		gbc_usernameField.insets = new Insets(0, 0, 5, 5);
@@ -76,7 +81,7 @@ public class RunPanel extends SheetPanel{
 		gbc_siloDropDown.gridy = 2;
 		add(siloDropDown, gbc_siloDropDown);
 		
-		JLabel lblPassword = new JLabel("Password");
+		lblPassword = new JLabel("Password");
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
 		gbc_lblPassword.anchor = GridBagConstraints.EAST;
 		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
@@ -85,6 +90,10 @@ public class RunPanel extends SheetPanel{
 		add(lblPassword, gbc_lblPassword);
 		
 		passwordField = new JPasswordField();
+		passwordField.setName("Password");
+		passwordField.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(passwordField);
+		lblPassword.setLabelFor(passwordField);
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
 		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;

@@ -26,9 +26,12 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import classes.Constants;
+import classes.LessThanOrEqualVerifier;
 import classes.MaxLengthKeyListener;
+import classes.NumberTextField;
 import classes.Row;
 import classes.SheetPanel;
+import classes.TextFieldInputVerifier;
 import database.DatabaseConnection;
 
 public class RegisterPanel extends SheetPanel {
@@ -54,6 +57,7 @@ public class RegisterPanel extends SheetPanel {
 	private Set<String> entryNumbers;
 	private JLabel lblBUField;
 	private JTextField buField;
+	private JLabel lblVehicleCount;
 
 	/**
 	 * Create the panel.
@@ -68,7 +72,7 @@ public class RegisterPanel extends SheetPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
-		JLabel lblVehicleCount = new JLabel("Vehicle Count");
+		lblVehicleCount = new JLabel("Vehicle Count");
 		GridBagConstraints gbc_lblVehicleCount = new GridBagConstraints();
 		gbc_lblVehicleCount.insets = new Insets(0, 0, 5, 5);
 		gbc_lblVehicleCount.anchor = GridBagConstraints.EAST;
@@ -77,6 +81,11 @@ public class RegisterPanel extends SheetPanel {
 		add(lblVehicleCount, gbc_lblVehicleCount);
 
 		vehicleCount = new NumberTextField();
+		vehicleCount.setName("Vehicle count");
+		vehicleCount.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(vehicleCount);
+		
+		lblVehicleCount.setLabelFor(vehicleCount);
 		vehicleCount.setText("0");
 		vehicleCount.setColumns(3);
 
@@ -119,7 +128,10 @@ public class RegisterPanel extends SheetPanel {
 		lblSaleNumber.setLabelFor(saleNumber);
 
 		saleNumber = new NumberTextField();
+		saleNumber.setName("Sale number");
 		saleNumber.setText("1");
+		saleNumber.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(saleNumber);
 
 		GridBagConstraints gbc_saleNumber = new GridBagConstraints();
 		gbc_saleNumber.fill = GridBagConstraints.HORIZONTAL;
@@ -163,7 +175,10 @@ public class RegisterPanel extends SheetPanel {
 		SimpleDateFormat s = new SimpleDateFormat("yyyy");
 		String currentYear = s.format(c.getTime());
 		saleYear = new NumberTextField();
+		saleYear.setName("Sale year");
 		saleYear.setText(currentYear);
+		saleYear.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(saleYear);
 		GridBagConstraints gbc_saleYear = new GridBagConstraints();
 		gbc_saleYear.fill = GridBagConstraints.HORIZONTAL;
 		gbc_saleYear.insets = new Insets(0, 0, 5, 5);
@@ -207,6 +222,7 @@ public class RegisterPanel extends SheetPanel {
 		this.addAdditionalField(lblSellerNumber);
 
 		sellerNumber = new NumberTextField();
+		sellerNumber.setName("Seller number");
 
 		GridBagConstraints gbc_dealerNumber = new GridBagConstraints();
 		gbc_dealerNumber.fill = GridBagConstraints.HORIZONTAL;
@@ -246,6 +262,10 @@ public class RegisterPanel extends SheetPanel {
 		add(lblMiles, gbc_lblMiles);
 
 		milesRangeLow = new NumberTextField();
+		milesRangeHigh = new NumberTextField();
+		milesRangeLow.setName("Miles range low");
+		milesRangeLow.setInputVerifier(new LessThanOrEqualVerifier(new TextFieldInputVerifier(this),milesRangeHigh));
+		this.addVerifyInputField(milesRangeLow);
 		GridBagConstraints gbc_milesRangeLow = new GridBagConstraints();
 		gbc_milesRangeLow.fill = GridBagConstraints.HORIZONTAL;
 		gbc_milesRangeLow.insets = new Insets(0, 0, 5, 5);
@@ -262,7 +282,10 @@ public class RegisterPanel extends SheetPanel {
 		gbc_lblTo.gridy = 4;
 		add(lblTo, gbc_lblTo);
 
-		milesRangeHigh = new NumberTextField();
+		
+		milesRangeHigh.setName("Miles range high");
+		milesRangeHigh.setInputVerifier(new TextFieldInputVerifier(this));
+		this.addVerifyInputField(milesRangeHigh);
 		GridBagConstraints gbc_milesRangeHigh = new GridBagConstraints();
 		gbc_milesRangeHigh.insets = new Insets(0, 0, 5, 5);
 		gbc_milesRangeHigh.fill = GridBagConstraints.HORIZONTAL;
@@ -270,6 +293,8 @@ public class RegisterPanel extends SheetPanel {
 		gbc_milesRangeHigh.gridy = 4;
 		add(milesRangeHigh, gbc_milesRangeHigh);
 		milesRangeHigh.setColumns(10);
+		
+		
 		this.addAdditionalField(interiorColor);
 		this.addAdditionalField(bodyColor);
 		this.addAdditionalField(title);
@@ -288,6 +313,7 @@ public class RegisterPanel extends SheetPanel {
 		add(lblBUField, gbc_lblNewLabel);
 
 		buField = new JTextField(1);
+		buField.setName("BU field");
 		this.addAdditionalField(buField);
 		buField.setText("I");
 		buField.addKeyListener(new MaxLengthKeyListener(buField.getColumns()));
@@ -464,4 +490,5 @@ public class RegisterPanel extends SheetPanel {
 		// TODO Auto-generated method stub
 		return this.vehicleCount.getNumber();
 	}
+
 }

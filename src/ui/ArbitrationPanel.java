@@ -67,4 +67,10 @@ public class ArbitrationPanel extends ComboBoxSheetPanel {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected Object getDataType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

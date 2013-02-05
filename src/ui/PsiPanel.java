@@ -65,121 +65,8 @@ public class PsiPanel extends ComboBoxSheetPanel {
 	}
 	public PsiPanel(){
 		super(3);
-	}
-	/*public PsiPanel() {
 		allPsiRequests = new ArrayList<PsiType>();
-		allComboBoxes = new ArrayList<JComboBox<String> >();
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		setLayout(gridBagLayout);
-
-		setUpComboBoxes();
-
-		JButton btnAddVehicle = new JButton("Add vehicle");
-		btnAddVehicle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Make sure we actually selected a valid value.
-				for(JComboBox<String> comboBox : allComboBoxes){
-					if(comboBox.getSelectedIndex()<=1)
-						return;
-				}
-
-			    int index = vehicleList.getSelectedIndex(); //get selected index
-			    if (index == -1) { //no selection, so insert at beginning
-			        index = 0;
-			    } else {           //add after the selected item
-			        index++;
-			    }
-
-			    String outputString = "Vehicle -";
-			    outputString += " " + inspectionCodeComboBox.getSelectedItem();
-			    outputString += fourteenDayGuaranteeComboBox.getSelectedItem().equals("Y")?", Fourteen Day Guarantee":"";
-			    outputString += ", " + psiStatusComboBox.getSelectedItem() + " PSI";
-				allPsiRequests.add(index, new PsiType(
-								(String) inspectionCodeComboBox.getSelectedItem(),
-								(String) fourteenDayGuaranteeComboBox.getSelectedItem(),
-								(String) psiStatusComboBox.getSelectedItem()
-								));
-			    listModel.insertElementAt(outputString, index);
-
-			    //Select the new item and make it visible.
-			    vehicleList.setSelectedIndex(index);
-			    vehicleList.ensureIndexIsVisible(index);
-
-			    //Make the remove button enabled.
-			    btnRemoveVehicle.setEnabled(true);
-			}
-		});
-
-		chckbxVerifyQlm = new JCheckBox("Verify QLM");
-		GridBagConstraints gbc_chckbxVerifyQlm = new GridBagConstraints();
-		gbc_chckbxVerifyQlm.insets = new Insets(0, 0, 5, 5);
-		gbc_chckbxVerifyQlm.gridx = 0;
-		gbc_chckbxVerifyQlm.gridy = 0;
-		add(chckbxVerifyQlm, gbc_chckbxVerifyQlm);
-
-		chckbxVerifyQtm = new JCheckBox("Verify QTM");
-		GridBagConstraints gbc_chckbxVerifyQtm = new GridBagConstraints();
-		gbc_chckbxVerifyQtm.insets = new Insets(0, 0, 5, 5);
-		gbc_chckbxVerifyQtm.gridx = 1;
-		gbc_chckbxVerifyQtm.gridy = 0;
-		add(chckbxVerifyQtm, gbc_chckbxVerifyQtm);
-
-		chckbxVerifyOds = new JCheckBox("Verify ODS");
-		GridBagConstraints gbc_chckbxVerifyOds = new GridBagConstraints();
-		gbc_chckbxVerifyOds.insets = new Insets(0, 0, 5, 0);
-		gbc_chckbxVerifyOds.gridx = 2;
-		gbc_chckbxVerifyOds.gridy = 0;
-		add(chckbxVerifyOds, gbc_chckbxVerifyOds);
-
-		GridBagConstraints gbc_btnAddVehicle = new GridBagConstraints();
-		gbc_btnAddVehicle.insets = new Insets(0, 0, 5, 5);
-		gbc_btnAddVehicle.gridx = 0;
-		gbc_btnAddVehicle.gridy = 2;
-		add(btnAddVehicle, gbc_btnAddVehicle);
-
-		listModel = new DefaultListModel<String>();
-
-		btnRemoveVehicle = new JButton("Remove vehicle");
-		btnRemoveVehicle.setEnabled(false);
-		btnRemoveVehicle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int index = vehicleList.getSelectedIndex();
-				listModel.remove(index);
-				allPsiRequests.remove(index);
-
-				int size = listModel.getSize();
-
-			    if (size == 0) { //Nobody's left, disable firing.
-			        btnRemoveVehicle.setEnabled(false);
-
-			    } else { //Select an index.
-			        if (index == listModel.getSize()) {
-			            //removed item in last position
-			            index--;
-			        }
-
-			        vehicleList.setSelectedIndex(index);
-			        vehicleList.ensureIndexIsVisible(index);
-			    }
-			}
-		});
-		GridBagConstraints gbc_btnRemoveVehicle = new GridBagConstraints();
-		gbc_btnRemoveVehicle.insets = new Insets(0, 0, 5, 0);
-		gbc_btnRemoveVehicle.gridx = 2;
-		gbc_btnRemoveVehicle.gridy = 2;
-		add(btnRemoveVehicle, gbc_btnRemoveVehicle);
-		vehicleList = new JList<String>(listModel);
-		GridBagConstraints gbc_vehicleList = new GridBagConstraints();
-		gbc_vehicleList.gridwidth = 3;
-		gbc_vehicleList.fill = GridBagConstraints.BOTH;
-		gbc_vehicleList.gridx = 0;
-		gbc_vehicleList.gridy = 3;
-		add(vehicleList, gbc_vehicleList);
-	}*/
+	}
 
 	/**
 	 * 
@@ -235,6 +122,11 @@ public class PsiPanel extends ComboBoxSheetPanel {
 				(String) fourteenDayGuaranteeComboBox.getSelectedItem(),
 				(String) psiStatusComboBox.getSelectedItem()
 				));
+	}
+	@Override
+	protected Object getDataType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
